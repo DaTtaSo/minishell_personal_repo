@@ -107,9 +107,9 @@ int	redirect_input(char *file, int *status, char **path)
 	int	infile;
 
 	if (!ft_is_access(file, status))
-		ft_error("No such file or directory", path, &file, status);
-	else if (status == 126)
-		ft_error("Permission denied", path, &file, status);
+		ft_error("No such file or directory", path, &file, *status);
+	else if (*status == 126)
+		ft_error("Permission denied", path, &file, *status);
 	else
 	{
 		infile = open(file, O_RDONLY);
@@ -122,6 +122,7 @@ int	redirect_input(char *file, int *status, char **path)
 		}
 		close(infile);
 	}
+	return (0);
 }
 
 int	ft_error(char *msg, char **path, char **dtab, int status)
@@ -137,17 +138,70 @@ int	ft_error(char *msg, char **path, char **dtab, int status)
 	return (1);
 }
 
+int	ft_strcmp(char *s1, char *s2)
+{
+	size_t	i;
+
+	i = 0;
+	while (s1[i] && s2[i])
+	{
+		if (s1[i] != s2[i])
+			return ((unsigned char)s1[i] - (unsigned char)s2[i]);
+		i++;
+	}
+	return (0);
+}
+
+//int	main(int ac, char **av, char **env)
+//{
+//	char	**cmd;
+//	char	**path;
+//	char	*path_cmd;
+//	char	*read;
+//	int		status;
+//	pid_t	pid;
+//
+//	(void)ac;
+//	(void)av;
+//	while (1)
+//	{
+//		path = parse_env(env);
+//		read = readline("minishell> ");
+//		if (!read || (ft_strcmp(read, "exit") == 0))
+//			break ;
+//		if (!read[0])
+//			continue ;
+//		cmd = ft_split(read, ' ');
+//		free(read);
+//		if (!cmd || !(*cmd))
+//			return (ft_error("split error", path, cmd, -1));
+//		path_cmd = search_path(cmd[0], path, &status);
+//		if (!path_cmd)
+//		{
+//			ft_error("command not found", path, cmd, -1);
+//		}
+//		else if (status == 126)
+//			ft_error("Permission denied", path, cmd, -1);
+//		else
+//		{
+//			pid = fork();
+//			if (pid == -1)
+//				return (ft_error("pid error", path, cmd, errno));
+//			else if (pid == 0)
+//				execve(path_cmd, cmd, env);
+//			else
+//				waitpid(pid, &status, 0);
+//		}
+//	}
+//}
+
+
 int	main(int ac, char **av, char **env)
 {
-	char	**cmd;
-	char	**path;
-	char	*path_cmd;
-	char	*read;
-	int		status;
-	pid_t	pid;
+	t_data data;
+	char *read;
 
-	(void)ac;
-	(void)av;
+	init_data(&data, ac, av);
 	while (1)
 	{
 		path = parse_env(env);
