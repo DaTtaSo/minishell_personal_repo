@@ -47,17 +47,18 @@ typedef enum e_token_type
 	WORD
 } t_token_type;
 
-typedef struct s_tokens
+typedef struct s_token
 {
 	char	*str;
 	t_token_type type;
-	struct s_tokens *next;
-}	t_tokens ;
+	struct s_token *next;
+}	t_token ;
 
 typedef struct s_data
 {
-	t_tokens type; // genre si c un file une cmd un < | > >> << t a capter k
+	t_token *token; // genre si c un file une cmd un < | > >> << t a capter k
 	t_cmd *cmd;
+	char **env;
 	struct s_data *next ;
 }	t_data;
 
@@ -70,5 +71,6 @@ int		ft_is_access(char *path_cmd, int *error);
 
 //parsing
 void	init_data(t_data *data, int ac, char **av);
+t_token *tokenize(t_data *data, char *str);
 
 #endif

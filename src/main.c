@@ -204,32 +204,13 @@ int	main(int ac, char **av, char **env)
 	init_data(&data, ac, av);
 	while (1)
 	{
-		path = parse_env(env);
+		data.env = parse_env(env);
 		read = readline("minishell> ");
 		if (!read || (ft_strcmp(read, "exit") == 0))
 			break ;
 		if (!read[0])
 			continue ;
-		cmd = ft_split(read, ' ');
-		free(read);
-		if (!cmd || !(*cmd))
-			return (ft_error("split error", path, cmd, -1));
-		path_cmd = search_path(cmd[0], path, &status);
-		if (!path_cmd)
-		{
-			ft_error("command not found", path, cmd, -1);
-		}
-		else if (status == 126)
-			ft_error("Permission denied", path, cmd, -1);
-		else
-		{
-			pid = fork();
-			if (pid == -1)
-				return (ft_error("pid error", path, cmd, errno));
-			else if (pid == 0)
-				execve(path_cmd, cmd, env);
-			else
-				waitpid(pid, &status, 0);
+		tokenize(read);
 		}
 	}
 }
