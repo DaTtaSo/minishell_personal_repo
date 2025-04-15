@@ -37,3 +37,4 @@ char	**parse_env(char **env)
 		ft_free_dtab(path);
 	return (path);
 }
+

@@ -19,7 +19,8 @@
 
 typedef struct s_list
 {
-	void			*content;
+	char			*content;
+	char			*name;
 	struct s_list	*next;
 }	t_list;
 
@@ -64,7 +65,7 @@ void	*ft_memcpy(void *dest, const void *src, size_t n);
 void	*ft_memmove(void *dest, const void *src, size_t n);
 void	ft_striteri(char *s, void (*f)(unsigned int, char*));
 t_list	*ft_lstlast(t_list *lst);
-t_list	*ft_lstnew(void *content);
+t_list	*ft_lstnew(char *content, char *name);
 t_list	*ft_lstmap(t_list *lst, void *(*f)(void *), void (*del)(void *));
 
 #endif

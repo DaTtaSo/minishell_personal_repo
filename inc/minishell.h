@@ -56,9 +56,10 @@ typedef struct s_token
 
 typedef struct s_data
 {
-	t_token *token; // genre si c un file une cmd un < | > >> << t a capter k
 	t_cmd *cmd;
-	char **env;
+	t_list *env;
+	char *fd_in;
+	char *fd_out;
 	struct s_data *next ;
 }	t_data;
 

@@ -17,7 +17,6 @@ void	init_data(t_data *data, int ac, char **av)
 	(void)ac;
 	(void)av;
 	data->cmd = NULL;
-	data->token = NULL;
 	data->env = NULL;
 }
 
@@ -79,19 +78,30 @@ t_token *create_token(char *str, t_token_type type)
 	return (new_token);
 }
 
+char *extract_word(char *str, int *i)
+{
+	int	start;
+	int	quotes;
+
+	start = *i;
+	quotes = 0;
+	while (str[*i] && (quotes || !is_operator(str[*i])))
+	{
+		if (str[*i] == '\'' && )
+	}
+	return (ft_substr(str, start, *i - start));
+}
+
 t_token *tokenize(t_data *data, char *str)
 {
 	t_token *tokens;
-	t_token *current;
 	t_token *new_token;
 	t_token_type	type;
 	int	i;
 	char *word;
-	char *symbol;
 
 	new_token = NULL;
 	tokens = NULL;
-	current = NULL;
 	i = 0;
 	while (str[i])
 	{
@@ -101,7 +111,7 @@ t_token *tokenize(t_data *data, char *str)
 		if (is_operator(str[i]))
 			new_token = create_token(get_operator_str(type), type);
 		else
-			word = extract_word();
+			word = extract_word(str, &i);
 		if (!word || !new_token)
 			return (free(tokens), NULL);
 	}
