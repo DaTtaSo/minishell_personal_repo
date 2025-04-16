@@ -13,7 +13,7 @@
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
-# include "../libft/libft.h"
+# include "../includes/libft/libft.h"
 # include <errno.h>
 # include <fcntl.h>
 # include <readline/history.h>
@@ -63,15 +63,11 @@ typedef struct s_data
 	struct s_data *next ;
 }	t_data;
 
-int		ft_free_dtab(char **tab);
-void	ft_error_msg(char *arg, char *msg);
-int		ft_error(char *msg, char **path, char **dtab, int status);
 char	**parse_env(char **env);
-char	*search_path(char *cmd, char **path, int *error);
-int		ft_is_access(char *path_cmd, int *error);
 
 //parsing
 void	init_data(t_data *data, int ac, char **av);
 t_token *tokenize(t_data *data, char *str);
+t_list *cpy_env(char **env);
 
 #endif
