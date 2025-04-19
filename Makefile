@@ -26,15 +26,15 @@ CFLAGS				=		-Wall -Werror -MMD -MP -g3
 SRCS				=			$(addprefix $(SRCS_DIR), $(SRC_ACC))
 
 SRCS_DIR			=			srcs/
-#PARSING_DIR			=			parsing/
+PARSING_DIR			=			parsing/
 
-#PARSING_SRCS		=			imput_parse			\
-#								parsing_utils
+PARSING_SRCS		=			tokenize \
+								env
 
 
 MAIN_SRCS			=			main
 
-#SRC_ACC				+=			$(addprefix $(PARSING_DIR), $(addsuffix .c, $(PARSING_SRCS)))
+SRC_ACC				+=			$(addprefix $(PARSING_DIR), $(addsuffix .c, $(PARSING_SRCS)))
 SRC_ACC				+=			$(addsuffix .c, $(MAIN_SRCS))
 
 OBJ			=			$(patsubst $(SRCS_DIR)%.c,$(OBJ_DIR)%.o,$(SRCS))

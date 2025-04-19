@@ -10,31 +10,29 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../inc/minishell.h"
+#include "../../includes/minishell.h"
 
-char	**parse_env(char **env)
+char *expand_env_var(t_list *env_cpy, char *str)
 {
-	char	*tab;
-	char	**path;
-	int		i;
+	int i;
+	int quotes;
 
-	tab = NULL;
 	i = 0;
-	path = NULL;
-	while (env[i])
+	quotes = 0;
+	while (str[i])
 	{
-		if (!ft_strncmp("PATH=", env[i], 5))
-			break ;
+		if (str[i] == '\'' && quotes != 2)
+			quotes = quotes == 1 ? 0 : 1;
+		else if (str[i] == '\"' && quotes != 1)
+			quotes = quotes == 2 ? 0 : 2;
 		i++;
 	}
-	if (env[i])
-		tab = ft_strdup(&env[i][4]);
-	if (!tab)
-		return (NULL);
-	path = ft_split(tab, ':');
-	free(tab);
-	if (!path || !(*path))
-		ft_free_dtab(path);
-	return (path);
-}
+	i = 0;
+	while (str[i])
+	{
+		if (str[i] == '$')
 
+
+	}
+	return (NULL);
+}
