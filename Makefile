@@ -32,7 +32,8 @@ PARSING_SRCS		=			tokenize \
 								env
 
 
-MAIN_SRCS			=			main
+MAIN_SRCS			=			main \
+								utils
 
 SRC_ACC				+=			$(addprefix $(PARSING_DIR), $(addsuffix .c, $(PARSING_SRCS)))
 SRC_ACC				+=			$(addsuffix .c, $(MAIN_SRCS))

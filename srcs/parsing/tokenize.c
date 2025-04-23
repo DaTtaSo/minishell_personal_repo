@@ -108,7 +108,10 @@ t_token	*create_token(char *str, t_token_type type)
 		return (NULL);
 	new_token->str = ft_strdup(str);
 	if (!new_token->str)
+	{
+		free(new_token);
 		return (NULL);
+	}
 	new_token->type = type;
 	new_token->next = NULL;
 	return (new_token);
@@ -119,6 +122,7 @@ t_token	*tokenize(t_data *data, char *str)
 	t_token *new_token;
 	t_token **current;
 	t_token_type	type;
+	char	*word;
 	int	i;
 
 	new_token = NULL;
@@ -138,10 +142,15 @@ t_token	*tokenize(t_data *data, char *str)
 		else
 		{
 			type = WORD;
-			*current = create_token(extract_word( str, &i), type);
+			word = extract_word(str, &i);
+			*current = create_token(word, type);
+			free(word);
 		}
 		if(!*current)
+		{
+			free_tokens(new_token);
 			return (NULL);
+		}
 		current = &(*current)->next;
 	}
 	return (new_token);

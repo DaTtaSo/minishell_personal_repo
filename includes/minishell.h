@@ -64,9 +64,7 @@ typedef struct s_data
 	struct s_data *next ;
 }	t_data;
 
-char	**parse_env(char **env);
-
-//parsing
+/*parsing*/
 void	init_data(t_data *data, int ac, char **av);
 t_token *tokenize(t_data *data, char *str);
 t_list *cpy_env(char **env);
@@ -74,6 +72,10 @@ char *expand_env_var(t_list *env_cpy, char *str);
 int	ft_isspace(char c);
 
 
+/*utils*/
+int	ft_strcmp(char *s1, char *s2);
+void	free_tokens(t_token *token);
+void	free_env(t_list *env);
 
 
 

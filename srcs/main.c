@@ -31,6 +31,8 @@ t_list *cpy_env(char **env)
 		name = ft_substr(env[i], 0, j);
 		if (env[i][j] == '=')
 			content = ft_strdup(&env[i][j + 1]);
+		else
+			content = NULL;
 		ft_lstadd_back(&env_cpy, ft_lstnew(name, content));
 		i++;
 	}
@@ -55,46 +57,93 @@ t_list *cpy_env(char **env)
 //	return (0);
 //}
 
-//void	print_tokens(t_token *head)
-//{
-//	const char	*type_names[] = {
-//			"REDIR_IN",
-//			"REDIR_OUT",
-//			"HEREDOC",
-//			"APPEND",
-//			"PIPE",
-//			"WORD"
-//	};
-//
-//	printf("\n--- TOKENS ---\n");
-//	while (head)
-//	{
-//		printf("[%-8s] %s\n", type_names[head->type], head->str);
-//		head = head->next;
-//	}
-//	printf("--------------\n\n");
-//}
+void	print_tokens(t_token *head)
+{
+	const char	*type_names[] = {
+			"REDIR_IN",
+			"REDIR_OUT",
+			"HEREDOC",
+			"APPEND",
+			"PIPE",
+			"WORD"
+	};
+
+	printf("\n--- TOKENS ---\n");
+	while (head)
+	{
+		printf("[%-8s] %s\n", type_names[head->type], head->str);
+		head = head->next;
+	}
+	printf("--------------\n\n");
+}
+
+void	free_env(t_list *env)
+{
+	t_list *tmp;
+
+	while (env)
+	{
+		tmp = env;
+		env = env->next;
+		free(tmp->name);
+		free(tmp->content);
+		free(tmp);
+	}
+}
+
+void	free_tokens(t_token *token)
+{
+	t_token *tmp;
+
+	while (token)
+	{
+		tmp = token;
+		token = token->next;
+		free(tmp->str);
+		free(tmp);
+	}
+	token = NULL;
+}
+
+void	free_all(t_data data, char *read)
+{
+	if (data.token)
+		free_tokens(data.token);
+	if (data.env)
+		free_env(data.env);
+	free(read);
+}
+
 
 int	main(int ac, char **av, char **env)
 {
 	t_data data;
 	char	*cwd;
+	char	*expended;
 	char *read;
 
 	cwd = NULL;
 	init_data(&data, ac, av);
-	cpy_env(env);
+	data.env = cpy_env(env);
 	while (1)
 	{
-		cwd = ft_strjoin(getcwd(NULL, 0), ">");
+		expended = getcwd(NULL, 0);
+		cwd = ft_strjoin(expended, ">");
+		free(expended);
 		read = readline(cwd);
+		free(cwd);
 		if (!read)
 			break ;
 		add_history(read);
 		if (!read[0])
 			continue ;
-		expand_env_var(data.env ,read);
-		data.token = tokenize(&data, read);
-//		print_tokens(data.token);
-		}
+		expended = expand_env_var(data.env ,read);
+		data.token = tokenize(&data, expended);
+		free(expended);
+		print_tokens(data.token);
+		free_tokens(data.token);
+	}
+	rl_clear_history();
+	free_all(data, read);
+	return (0);
 }
