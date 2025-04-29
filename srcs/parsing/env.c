@@ -6,7 +6,7 @@
 /*   By: nbedouan <nbedouan@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/14 13:58:17 by nbedouan          #+#    #+#             */
-/*   Updated: 2025/04/14 13:58:44 by nbedouan         ###   ########.fr       */
+/*   Updated: 2025/04/23 17:00:13 by nbedouan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,12 +61,18 @@ char *expand_env_var(t_list *env_cpy, char *str)
 	{
 		if (str[i] == '\'' && quotes != 2)
 		{
-			quotes = quotes == 1 ? 0 : 1;
+			if (quotes == 1)
+				quotes = 0;
+			else
+				quotes = 1;
 			res = join_and_free(res, char_to_str(str[i++]));
 		}
 		else if (str[i] == '\"' && quotes != 1)
 		{
-			quotes = quotes == 2 ? 0 : 2;
+			if (quotes == 2)
+				quotes = 0;
+			else
+				quotes = 2;
 			res = join_and_free(res, char_to_str(str[i++]));
 		}
 		else if (str[i] == '$' && quotes != 1)

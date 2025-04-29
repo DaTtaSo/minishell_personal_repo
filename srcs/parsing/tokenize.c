@@ -16,10 +16,9 @@ void	init_data(t_data *data, int ac, char **av)
 {
 	(void)ac;
 	(void)av;
+	data->token = NULL;
 	data->cmd = NULL;
 	data->env = NULL;
-	data->fd_out = NULL;
-	data->fd_in = NULL;
 }
 
 int	ft_isspace(char c)
@@ -46,9 +45,19 @@ char *extract_word(char *str, int *i)
 	while (str[*i] && (quotes || (!is_operator(str[*i]) && !ft_isspace(str[*i]))))
 	{
 		if (str[*i] == '\'' && quotes != 2)
-			quotes = quotes == 1 ? 0 : 1;
+		{
+			if (quotes == 1)
+				quotes = 0;
+			else
+				quotes = 1;
+		}
 		else if (str[*i] == '\"' && quotes != 1)
-			quotes = quotes == 2 ? 0 : 2;
+		{
+			if (quotes == 2)
+				quotes = 0;
+			else
+				quotes = 2;
+		}
 		(*i)++;
 	}
 	return (ft_substr(str, start, *i - start));
@@ -87,15 +96,15 @@ t_token_type get_operator_type(char *str, int *i)
 char	*get_operator_str(t_token_type type)
 {
 	if (type == HEREDOC)
-		return (ft_strdup("<<"));
+		return ("<<");
 	if (type == APPEND)
-		return (ft_strdup(">>"));
+		return (">>");
 	if (type == REDIR_IN)
-		return (ft_strdup("<"));
+		return ("<");
 	if (type == REDIR_OUT)
-		return (ft_strdup(">"));
+		return (">");
 	if (type == PIPE)
-		return (ft_strdup("|"));
+		return ("|");
 	return (NULL);
 }
 

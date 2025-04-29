@@ -29,7 +29,8 @@ SRCS_DIR			=			srcs/
 PARSING_DIR			=			parsing/
 
 PARSING_SRCS		=			tokenize \
-								env
+								env \
+								command_builder
 
 
 MAIN_SRCS			=			main \

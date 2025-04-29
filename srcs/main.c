@@ -12,6 +12,17 @@
 
 #include "../includes/minishell.h"
 
+void	sig_handler(int sig)
+{
+	if (sig == SIGINT)
+	{
+		write(1, "\n", 1);
+		rl_replace_line("", 0);
+		rl_on_new_line();
+		rl_redisplay();
+	}
+}
+
 t_list *cpy_env(char **env)
 {
 	int	i;
@@ -39,15 +50,67 @@ t_list *cpy_env(char **env)
 	return (env_cpy);
 }
 
-//void	print_env_list(t_list *env)
+t_cmd *create_cmd()
+{
+	t_cmd *cmd = malloc(sizeof(t_cmd));
+	if (!cmd)
+		return NULL;
+	return cmd;
+}
+
+void print(t_cmd *cmd)
+{
+	int i;
+
+	if (!cmd)
+	{
+		printf("Command list is empty\n");
+		return;
+	}
+
+	printf("Starting to print commands:\n");  // Debug message
+
+	while (cmd)
+	{
+		i = 0;
+		printf("Command at %p:\n", (void*)cmd);  // Print command address for debugging
+
+		if (!cmd->cmd_param)
+		{
+			printf("  cmd_param array is NULL\n");
+		}
+		else
+		{
+			while (cmd->cmd_param[i])
+			{
+				printf("  param[%d]: '%s'\n", i, cmd->cmd_param[i]);
+				i++;
+			}
+			if (i == 0)
+				printf("  No parameters found\n");
+		}
+
+		cmd = cmd->next;
+	}
+	printf("Done printing commands\n");  // Debug message
+}
+
+//void	print(t_cmd *cmd)
 //{
-//	while (env)
+//	int i;
+//
+//	while (cmd)
 //	{
-//		printf("name: %-15s | value: %s\n", env->name, env->content);
-//		env = env->next;
+//		i = 0;
+//		while (cmd->cmd_param[i])
+//		{
+//			printf("name: %-15s\n", cmd->cmd_param[i]);
+//			i++;
+//		}
+//		cmd = cmd->next;
 //	}
 //}
-//
+
 //int	main(int ac, char **av, char **env)
 //{
 //	(void)ac;
@@ -57,25 +120,25 @@ t_list *cpy_env(char **env)
 //	return (0);
 //}
 
-void	print_tokens(t_token *head)
-{
-	const char	*type_names[] = {
-			"REDIR_IN",
-			"REDIR_OUT",
-			"HEREDOC",
-			"APPEND",
-			"PIPE",
-			"WORD"
-	};
-
-	printf("\n--- TOKENS ---\n");
-	while (head)
-	{
-		printf("[%-8s] %s\n", type_names[head->type], head->str);
-		head = head->next;
-	}
-	printf("--------------\n\n");
-}
+//void	print_tokens(t_token *head)
+//{
+//	const char	*type_names[] = {
+//			"REDIR_IN",
+//			"REDIR_OUT",
+//			"HEREDOC",
+//			"APPEND",
+//			"PIPE",
+//			"WORD"
+//	};
+//
+//	printf("\n--- TOKENS ---\n");
+//	while (head)
+//	{
+//		printf("[%-8s] %s\n", type_names[head->type], head->str);
+//		head = head->next;
+//	}
+//	printf("--------------\n\n");
+//}
 
 void	free_env(t_list *env)
 {
@@ -125,6 +188,7 @@ int	main(int ac, char **av, char **env)
 	cwd = NULL;
 	init_data(&data, ac, av);
 	data.env = cpy_env(env);
+	signal(SIGINT, sig_handler);
 	while (1)
 	{
 		expended = getcwd(NULL, 0);
@@ -140,7 +204,9 @@ int	main(int ac, char **av, char **env)
 		expended = expand_env_var(data.env ,read);
 		data.token = tokenize(&data, expended);
 		free(expended);
-		print_tokens(data.token);
+		cmd_builder(data);
+//		print_tokens(data.token);
+		print(data.cmd);
 		free_tokens(data.token);
 	}
 	rl_clear_history();
