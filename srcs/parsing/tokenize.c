@@ -133,6 +133,7 @@ t_token	*tokenize(t_data *data, char *str)
 	t_token_type	type;
 	char	*word;
 	int	i;
+	int	in_redirection;
 
 	new_token = NULL;
 	current = &new_token;
@@ -147,6 +148,7 @@ t_token	*tokenize(t_data *data, char *str)
 		{
 			type = get_operator_type(str, &i);
 			*current = create_token(get_operator_str(type), type);
+			in_redirection = 1;
 		}
 		else
 		{

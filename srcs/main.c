@@ -50,13 +50,13 @@ t_list *cpy_env(char **env)
 	return (env_cpy);
 }
 
-t_cmd *create_cmd()
-{
-	t_cmd *cmd = malloc(sizeof(t_cmd));
-	if (!cmd)
-		return NULL;
-	return cmd;
-}
+//t_cmd *create_cmd()
+//{
+//	t_cmd *cmd = malloc(sizeof(t_cmd));
+//	if (!cmd)
+//		return NULL;
+//	return cmd;
+//}
 
 void print(t_cmd *cmd)
 {
@@ -120,25 +120,25 @@ void print(t_cmd *cmd)
 //	return (0);
 //}
 
-//void	print_tokens(t_token *head)
-//{
-//	const char	*type_names[] = {
-//			"REDIR_IN",
-//			"REDIR_OUT",
-//			"HEREDOC",
-//			"APPEND",
-//			"PIPE",
-//			"WORD"
-//	};
-//
-//	printf("\n--- TOKENS ---\n");
-//	while (head)
-//	{
-//		printf("[%-8s] %s\n", type_names[head->type], head->str);
-//		head = head->next;
-//	}
-//	printf("--------------\n\n");
-//}
+void	print_tokens(t_token *head)
+{
+	const char	*type_names[] = {
+			"REDIR_IN",
+			"REDIR_OUT",
+			"HEREDOC",
+			"APPEND",
+			"PIPE",
+			"WORD"
+	};
+
+	printf("\n--- TOKENS ---\n");
+	while (head)
+	{
+		printf("[%-8s] %s\n", type_names[head->type], head->str);
+		head = head->next;
+	}
+	printf("--------------\n\n");
+}
 
 void	free_env(t_list *env)
 {
@@ -204,8 +204,8 @@ int	main(int ac, char **av, char **env)
 		expended = expand_env_var(data.env ,read);
 		data.token = tokenize(&data, expended);
 		free(expended);
-		cmd_builder(data);
-//		print_tokens(data.token);
+		cmd_builder(&data);
+		print_tokens(data.token);
 		print(data.cmd);
 		free_tokens(data.token);
 	}

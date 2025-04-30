@@ -34,8 +34,8 @@
 typedef struct s_cmd
 {
 	char	**cmd_param;
-	char *fd_in;
-	char *fd_out;
+	int *fd_in;
+	int *fd_out;
 	struct s_cmd	*next;
 }	t_cmd ;
 
@@ -70,7 +70,8 @@ t_token *tokenize(t_data *data, char *str);
 t_list *cpy_env(char **env);
 char *expand_env_var(t_list *env_cpy, char *str);
 int	ft_isspace(char c);
-t_data	cmd_builder(t_data data);
+t_data	cmd_builder(t_data *data);
+t_cmd *cmd_list(t_token *token);
 
 /*utils*/
 int	ft_strcmp(char *s1, char *s2);
