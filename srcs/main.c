@@ -230,7 +230,7 @@ void	free_iteration_data(t_data *data)
 	}
 }
 
-void	free_all(t_data *data)
+void	free_all(t_data *data, char *read)
 {
 	free_iteration_data(data);
 	if(data->env)
@@ -238,6 +238,8 @@ void	free_all(t_data *data)
 		free_env(data->env);
 		data->env = NULL;
 	}
+	if (read)
+		free(read);
 }
 
 int main(int ac, char **av, char **env)
@@ -255,15 +257,10 @@ int main(int ac, char **av, char **env)
 		fprintf(stderr, "Error: Failed to copy environment\n");
 		return (1);
 	}
-
 	signal(SIGINT, sig_handler);
-
 	while (1)
 	{
-		// Handle any pending signals
 		handle_sig();
-
-		// Create prompt
 		cwd = getcwd(NULL, 0);
 		if (!cwd)
 		{
@@ -274,61 +271,39 @@ int main(int ac, char **av, char **env)
 			prompt = ft_strjoin(cwd, "> ");
 			free(cwd);
 		}
-
 		if (!prompt)
 		{
 			fprintf(stderr, "Error: Memory allocation failed\n");
 			break;
 		}
-
 		read = readline(prompt);
 		free(prompt);
-
-		if (!read) // Ctrl+D pressed
+		if (!read)
 			break;
-
-		if (!read[0]) // Empty line
+		if (!read[0])
 		{
 			free(read);
 			continue;
 		}
-
 		add_history(read);
-
-		// Expand environment variables
 		expanded = expand_env_var(data.env, read);
 		free(read);
-
 		if (!expanded)
 		{
 			fprintf(stderr, "Error: Environment expansion failed\n");
 			continue;
 		}
-
-		// Tokenize and parse
 		data.token = tokenize(&data, expanded);
 		free(expanded);
-
 		if (!data.token)
 			continue;
-
-		// Build command structure
-		data = cmd_builder(&data); // Note: this should probably return int for error checking
-
-		// Debug output
+		data = cmd_builder(&data);
 		print_tokens(data.token);
 		print(data.cmd);
-
-		// Execute commands here (not implemented)
-		// execute_commands(data.cmd);
-
-		// Clean up iteration data
 		free_iteration_data(&data);
 	}
-
 	rl_clear_history();
-	free_all(&data);
-
+	free_all(&data, read);
 	return (0);
 }
 
