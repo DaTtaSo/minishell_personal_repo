@@ -33,10 +33,12 @@
 
 typedef struct s_cmd
 {
+	int		type;
+	char	**eof;
 	char	**cmd_param;
-	int *fd_in;
-	int *fd_out;
-	struct s_cmd	*next;
+	char	*file_in;
+	char	*file_out;
+	struct	s_cmd	*next;
 }	t_cmd ;
 
 typedef enum e_token_type
@@ -61,7 +63,6 @@ typedef struct s_data
 	t_cmd *cmd;
 	t_list *env;
 	t_token *token;
-	struct s_data *next ;
 }	t_data;
 
 /*parsing*/
@@ -77,7 +78,7 @@ t_cmd *cmd_list(t_token *token);
 int	ft_strcmp(char *s1, char *s2);
 void	free_tokens(t_token *token);
 void	free_env(t_list *env);
-void	free_all(t_data data, char *read);
+void	free_all(t_data *data);
 
 
 

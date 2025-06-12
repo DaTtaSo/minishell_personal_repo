@@ -12,14 +12,25 @@
 
 #include "../includes/minishell.h"
 
+volatile sig_atomic_t g_signal_received = 0;
+
 void	sig_handler(int sig)
 {
 	if (sig == SIGINT)
 	{
+		g_signal_received = SIGINT;
 		write(1, "\n", 1);
+	}
+}
+
+void	handle_sig()
+{
+	if (g_signal_received == SIGINT)
+	{
 		rl_replace_line("", 0);
 		rl_on_new_line();
 		rl_redisplay();
+		g_signal_received = 0;
 	}
 }
 
@@ -33,17 +44,27 @@ t_list *cpy_env(char **env)
 
 	env_cpy = NULL;
 	i = 0;
-	j = 0;
 	while (env[i])
 	{
 		j = 0;
 		while (env[i][j] && env[i][j] != '=')
 			j++;
 		name = ft_substr(env[i], 0, j);
+		if (!name)
+		{
+			free_env(env_cpy);
+			return (NULL);
+		}
 		if (env[i][j] == '=')
 			content = ft_strdup(&env[i][j + 1]);
 		else
 			content = NULL;
+		if (env[i][j] == '=' && !content)
+		{
+			free(name);
+			free_env(env_cpy);
+			return (NULL);
+		}
 		ft_lstadd_back(&env_cpy, ft_lstnew(name, content));
 		i++;
 	}
@@ -81,7 +102,7 @@ void print(t_cmd *cmd)
 		}
 		else
 		{
-			while (cmd->cmd_param[i])
+			while (cmd->cmd_param && cmd->cmd_param[i])
 			{
 				printf("  param[%d]: '%s'\n", i, cmd->cmd_param[i]);
 				i++;
@@ -168,48 +189,181 @@ void	free_tokens(t_token *token)
 	token = NULL;
 }
 
-void	free_all(t_data data, char *read)
+void	free_cmd(t_cmd *cmd)
 {
-	if (data.token)
-		free_tokens(data.token);
-	if (data.env)
-		free_env(data.env);
-	free(read);
+	t_cmd *tmp;
+	int		i;
+
+	i = 0;
+	while (cmd)
+	{
+		tmp = cmd;
+		cmd = cmd->next;
+		if (tmp->cmd_param)
+		{
+			i = 0;
+			while (tmp->cmd_param[i])
+			{
+				free(tmp->cmd_param[i]);
+				i++;
+			}
+			free(tmp->cmd_param);
+		}
+//		free(tmp->file_out);
+//		free(tmp->file_in);
+//		free(tmp->eof);
+		free(tmp);
+	}
 }
 
+void	free_iteration_data(t_data *data)
+{
+	if (data->token)
+	{
+		free_tokens(data->token);
+		data->token = NULL;
+	}
+	if (data->cmd)
+	{
+		free_cmd(data->cmd);
+		data->cmd = NULL;
+	}
+}
 
-int	main(int ac, char **av, char **env)
+void	free_all(t_data *data)
+{
+	free_iteration_data(data);
+	if(data->env)
+	{
+		free_env(data->env);
+		data->env = NULL;
+	}
+}
+
+int main(int ac, char **av, char **env)
 {
 	t_data data;
-	char	*cwd;
-	char	*expended;
+	char *cwd;
+	char *expanded;
 	char *read;
+	char *prompt;
 
-	cwd = NULL;
 	init_data(&data, ac, av);
 	data.env = cpy_env(env);
+	if (!data.env)
+	{
+		fprintf(stderr, "Error: Failed to copy environment\n");
+		return (1);
+	}
+
 	signal(SIGINT, sig_handler);
+
 	while (1)
 	{
-		expended = getcwd(NULL, 0);
-		cwd = ft_strjoin(expended, ">");
-		free(expended);
-		read = readline(cwd);
-		free(cwd);
-		if (!read)
-			break ;
+		// Handle any pending signals
+		handle_sig();
+
+		// Create prompt
+		cwd = getcwd(NULL, 0);
+		if (!cwd)
+		{
+			prompt = ft_strdup("minishell> ");
+		}
+		else
+		{
+			prompt = ft_strjoin(cwd, "> ");
+			free(cwd);
+		}
+
+		if (!prompt)
+		{
+			fprintf(stderr, "Error: Memory allocation failed\n");
+			break;
+		}
+
+		read = readline(prompt);
+		free(prompt);
+
+		if (!read) // Ctrl+D pressed
+			break;
+
+		if (!read[0]) // Empty line
+		{
+			free(read);
+			continue;
+		}
+
 		add_history(read);
-		if (!read[0])
-			continue ;
-		expended = expand_env_var(data.env ,read);
-		data.token = tokenize(&data, expended);
-		free(expended);
-		cmd_builder(&data);
+
+		// Expand environment variables
+		expanded = expand_env_var(data.env, read);
+		free(read);
+
+		if (!expanded)
+		{
+			fprintf(stderr, "Error: Environment expansion failed\n");
+			continue;
+		}
+
+		// Tokenize and parse
+		data.token = tokenize(&data, expanded);
+		free(expanded);
+
+		if (!data.token)
+			continue;
+
+		// Build command structure
+		data = cmd_builder(&data); // Note: this should probably return int for error checking
+
+		// Debug output
 		print_tokens(data.token);
 		print(data.cmd);
-		free_tokens(data.token);
+
+		// Execute commands here (not implemented)
+		// execute_commands(data.cmd);
+
+		// Clean up iteration data
+		free_iteration_data(&data);
 	}
+
 	rl_clear_history();
-	free_all(data, read);
+	free_all(&data);
+
 	return (0);
 }
+
+//int	main(int ac, char **av, char **env)
+//{
+//	t_data data;
+//	char	*cwd;
+//	char	*expanded;
+//	char *read;
+//
+//	cwd = NULL;
+//	init_data(&data, ac, av);
+//	data.env = cpy_env(env);
+//	signal(SIGINT, sig_handler);
+//	while (1)
+//	{
+//		handle_sig();
+//		expanded = getcwd(NULL, 0);
+//		cwd = ft_strjoin(expanded, ">");
+//		free(expanded);
+//		read = readline(cwd);
+//		free(cwd);
+//		if (!read)
+//			break ;
+//		add_history(read);
+//		if (!read[0])
+//			continue ;
+//		expanded = expand_env_var(data.env ,read);
+//		data.token = tokenize(&data, expanded);
+//		free(expanded);
+//		cmd_builder(&data);
+//		print_tokens(data.token);
+//		print(data.cmd);
+//	}
+//	rl_clear_history();
+//	free_all(&data);
+//	return (0);
+//}
