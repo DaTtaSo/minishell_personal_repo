@@ -80,8 +80,7 @@ t_cmd *create_new_cmd(t_token *token)
 		new_cmd->cmd_param[i] = NULL;
 		i++;
 	}
-//	new_cmd->file_in = NULL;
-//	new_cmd->file_out = NULL;
+	new_cmd->file = NULL;
 	new_cmd->next = NULL;
 	return (new_cmd);
 }
@@ -183,7 +182,7 @@ t_cmd *cmd_list(t_token *token)
 //		}
 //	}
 //}
-/
+
 static t_file	*file_add_back(t_file **lst)
 {
 	t_file	*new;

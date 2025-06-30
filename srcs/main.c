@@ -236,6 +236,20 @@ void	free_tokens(t_token *token)
 	token = NULL;
 }
 
+void free_file_list(t_file *file)
+{
+	t_file *tmp;
+
+	while (file)
+	{
+		tmp = file;
+		file = file->next;
+		if (tmp->file)
+			free(tmp->file);
+		free(tmp);
+	}
+}
+
 void	free_cmd(t_cmd *cmd)
 {
 	t_cmd *tmp;
@@ -259,9 +273,12 @@ void	free_cmd(t_cmd *cmd)
 //		free(tmp->file_out);
 //		free(tmp->file_in);
 //		free(tmp->eof);
+		if (tmp->file)
+			free_file_list(tmp->file);
 		free(tmp);
 	}
 }
+
 
 void	free_iteration_data(t_data *data)
 {
@@ -342,6 +359,7 @@ int main(int ac, char **av, char **env)
 		}
 		data.token = tokenize(&data, expanded);
 		free(expanded);
+//		check_heredoc(data.token);
 		if (!data.token)
 			continue;
 		data = cmd_builder(&data);
@@ -352,6 +370,11 @@ int main(int ac, char **av, char **env)
 	rl_clear_history();
 	free_all(&data, read);
 	return (0);
+}
+
+void	check_heredoc(t_token token)
+{
+
 }
 
 //int	main(int ac, char **av, char **env)
