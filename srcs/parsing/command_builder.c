@@ -80,8 +80,8 @@ t_cmd *create_new_cmd(t_token *token)
 		new_cmd->cmd_param[i] = NULL;
 		i++;
 	}
-	new_cmd->file_in = NULL;
-	new_cmd->file_out = NULL;
+//	new_cmd->file_in = NULL;
+//	new_cmd->file_out = NULL;
 	new_cmd->next = NULL;
 	return (new_cmd);
 }
@@ -122,29 +122,117 @@ t_cmd *cmd_list(t_token *token)
 	return (head);
 }
 
-void	handle_redirection(t_cmd *current_cmd, t_token *token)
+//void	handle_redirection(t_cmd *current_cmd, t_token *token)
+//{
+//	if (token->type == REDIR_IN || token->type == HEREDOC)
+//	{
+//		token = token->next;
+//		if (token && current_cmd)
+//		{
+//			free(current_cmd->file_in);
+//			current_cmd->file_in = ft_strdup(token->str);
+//		}
+//	}
+//	else if (token->type == REDIR_OUT || token->type == APPEND)
+//	{
+//		token = token->next;
+//		if (token && current_cmd)
+//		{
+//			free(current_cmd->file_out);
+//			current_cmd->file_out = ft_strdup(token->str);
+//		}
+//	}
+//	if (token)
+//		token = token->next;
+//}
+
+//void handle_redirection(t_cmd *cmd, t_token **token)
+//{
+//	if (!token || !*token)
+//		return;
+//
+//	cmd->file->type = (*token)->type;
+//	if ((*token)->type == REDIR_IN)
+//	{
+//		*token = (*token)->next;
+//		if (*token && (*token)->str)
+//		{
+//			cmd->file.file = ft_strdup((*token)->str);
+//			cmd->file = file->next;
+//			*token = (*token)->next;
+//		}
+//	}
+//	else if ((*token)->type == HEREDOC)
+//	{
+//		*token = (*token)->next;
+//		if (*token && (*token)->str)
+//		{
+//			file.file = ft_strdup((*token)->str);
+//			file = file.next;
+//			*token = (*token)->next;
+//		}
+//	}
+//	else if ((*token)->type == REDIR_OUT || (*token)->type == APPEND)
+//	{
+//		*token = (*token)->next;
+//		if (*token && (*token)->str)
+//		{
+//			file.file = ft_strdup((*token)->str);
+//			file = file.next;
+//			*token = (*token)->next;
+//		}
+//	}
+//}
+/
+static t_file	*file_add_back(t_file **lst)
 {
-	if (token->type == REDIR_IN || token->type == HEREDOC)
+	t_file	*new;
+	t_file	*current;
+
+	new = ft_calloc(1, sizeof(t_file));
+	if (!new)
+		return (NULL);
+	if (!*lst)
+		*lst = new;
+	else
 	{
-		token = token->next; // Move to filename
-		if (token && current_cmd)
-		{
-			free(current_cmd->file_in); // Free existing if any
-			current_cmd->file_in = ft_strdup(token->str);
-		}
+		current = *lst;
+		while (current->next)
+			current = current->next;
+		current->next = new;
 	}
-	else if (token->type == REDIR_OUT || token->type == APPEND)
-	{
-		token = token->next; // Move to filename
-		if (token && current_cmd)
-		{
-			free(current_cmd->file_out); // Free existing if any
-			current_cmd->file_out = ft_strdup(token->str);
-		}
-	}
-	if (token)
-		token = token->next; // Move past filename
+	return (new);
 }
+
+static void	copy_filename(t_file *current, t_token **token)
+{
+	*token = (*token)->next;
+	if (*token && (*token)->str)
+	{
+		current->file = ft_strdup((*token)->str);
+		*token = (*token)->next;
+	}
+}
+
+void	handle_redirection(t_file **files, t_token **token)
+{
+	t_file	*current;
+
+	if (!files || !token || !*token)
+		return ;
+	current = file_add_back(files);
+	if (!current)
+		return ;
+	current->type = (*token)->type;
+	if (current->type == REDIR_IN
+		|| current->type == HEREDOC
+		|| current->type == REDIR_OUT
+		|| current->type == APPEND)
+	{
+		copy_filename(current, token);
+	}
+}
+
 
 //
 //t_data	cmd_builder(t_data *data)
@@ -207,7 +295,7 @@ t_data cmd_builder(t_data *data)
 			token = token->next;
 		}
 		else if (is_redirection(token->type))
-			handle_redirection(current_cmd, token);
+			handle_redirection(&current_cmd->file, &token);
 		else if (token->type == PIPE)
 		{
 			if (current_cmd && current_cmd->cmd_param)

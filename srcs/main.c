@@ -82,6 +82,7 @@ t_list *cpy_env(char **env)
 void print(t_cmd *cmd)
 {
 	int i;
+	int cmd_num = 0;
 
 	if (!cmd)
 	{
@@ -89,12 +90,12 @@ void print(t_cmd *cmd)
 		return;
 	}
 
-	printf("Starting to print commands:\n");  // Debug message
+	printf("Starting to print commands:\n");
 
 	while (cmd)
 	{
 		i = 0;
-		printf("Command at %p:\n", (void*)cmd);  // Print command address for debugging
+		printf("Command %d at %p:\n", cmd_num++, (void *)cmd);
 
 		if (!cmd->cmd_param)
 		{
@@ -102,7 +103,7 @@ void print(t_cmd *cmd)
 		}
 		else
 		{
-			while (cmd->cmd_param && cmd->cmd_param[i])
+			while (cmd->cmd_param[i])
 			{
 				printf("  param[%d]: '%s'\n", i, cmd->cmd_param[i]);
 				i++;
@@ -111,10 +112,56 @@ void print(t_cmd *cmd)
 				printf("  No parameters found\n");
 		}
 
+		// ✅ Itérer sans écraser cmd->file
+		t_file *file = cmd->file;
+		while (file)
+		{
+			printf("  file: '%s'\n", file->file ? file->file : "(none)");
+			printf("  type: '%d'\n", file->type);
+			file = file->next;
+		}
 		cmd = cmd->next;
 	}
-	printf("Done printing commands\n");  // Debug message
+	printf("Done printing commands\n");
 }
+
+
+//void print(t_cmd *cmd)
+//{
+//	int i;
+//
+//	if (!cmd)
+//	{
+//		printf("Command list is empty\n");
+//		return;
+//	}
+//
+//	printf("Starting to print commands:\n");  // Debug message
+//
+//	while (cmd)
+//	{
+//		i = 0;
+//		printf("Command at %p:\n", (void*)cmd);  // Print command address for debugging
+//
+//		if (!cmd->cmd_param)
+//		{
+//			printf("  cmd_param array is NULL\n");
+//		}
+//		else
+//		{
+//			while (cmd->cmd_param && cmd->cmd_param[i])
+//			{
+//				printf("  param[%d]: '%s'\n", i, cmd->cmd_param[i]);
+//				i++;
+//			}
+//			if (i == 0)
+//				printf("  No parameters found\n");
+//		}
+//
+//		cmd = cmd->next;
+//	}
+//	printf("Done printing commands\n");  // Debug message
+//}
 
 //void	print(t_cmd *cmd)
 //{
@@ -339,6 +386,6 @@ int main(int ac, char **av, char **env)
 //		print(data.cmd);
 //	}
 //	rl_clear_history();
-//	free_all(&data);
+//	free_all(&data, read);
 //	return (0);
 //}

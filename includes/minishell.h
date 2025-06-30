@@ -31,13 +31,18 @@
 //#define PIPE		5	//|
 //#define WORD			6
 
+typedef struct s_file
+{
+	int	type;
+	char	*file;
+	char	**eof;
+	struct s_file	*next;
+}	t_file;
+
 typedef struct s_cmd
 {
-	int		type;
-	char	**eof;
 	char	**cmd_param;
-	char	*file_in;
-	char	*file_out;
+	t_file	*file;
 	struct	s_cmd	*next;
 }	t_cmd ;
 
