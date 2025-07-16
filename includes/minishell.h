@@ -75,6 +75,7 @@ void	init_data(t_data *data, int ac, char **av);
 t_token *tokenize(t_data *data, char *str);
 t_list *cpy_env(char **env);
 char *expand_env_var(t_list *env_cpy, char *str);
+char *remove_quotes(const char *src);
 int	ft_isspace(char c);
 t_data	cmd_builder(t_data *data);
 t_cmd *cmd_list(t_token *token);

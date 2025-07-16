@@ -10,28 +10,14 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/minishell.h"
-
-volatile sig_atomic_t g_signal_received = 0;
+#include "minishell.h"
 
 void	sig_handler(int sig)
 {
-	if (sig == SIGINT)
-	{
-		g_signal_received = SIGINT;
-		write(1, "\n", 1);
-	}
-}
-
-void	handle_sig()
-{
-	if (g_signal_received == SIGINT)
-	{
-		rl_replace_line("", 0);
-		rl_on_new_line();
-		rl_redisplay();
-		g_signal_received = 0;
-	}
+	rl_replace_line("", 0);
+	write(STDOUT_FILENO, "\n", 1);
+	rl_on_new_line();
+	rl_redisplay();
 }
 
 t_list *cpy_env(char **env)
@@ -70,14 +56,6 @@ t_list *cpy_env(char **env)
 	}
 	return (env_cpy);
 }
-
-//t_cmd *create_cmd()
-//{
-//	t_cmd *cmd = malloc(sizeof(t_cmd));
-//	if (!cmd)
-//		return NULL;
-//	return cmd;
-//}
 
 void print(t_cmd *cmd)
 {
@@ -124,69 +102,6 @@ void print(t_cmd *cmd)
 	}
 	printf("Done printing commands\n");
 }
-
-
-//void print(t_cmd *cmd)
-//{
-//	int i;
-//
-//	if (!cmd)
-//	{
-//		printf("Command list is empty\n");
-//		return;
-//	}
-//
-//	printf("Starting to print commands:\n");  // Debug message
-//
-//	while (cmd)
-//	{
-//		i = 0;
-//		printf("Command at %p:\n", (void*)cmd);  // Print command address for debugging
-//
-//		if (!cmd->cmd_param)
-//		{
-//			printf("  cmd_param array is NULL\n");
-//		}
-//		else
-//		{
-//			while (cmd->cmd_param && cmd->cmd_param[i])
-//			{
-//				printf("  param[%d]: '%s'\n", i, cmd->cmd_param[i]);
-//				i++;
-//			}
-//			if (i == 0)
-//				printf("  No parameters found\n");
-//		}
-//
-//		cmd = cmd->next;
-//	}
-//	printf("Done printing commands\n");  // Debug message
-//}
-
-//void	print(t_cmd *cmd)
-//{
-//	int i;
-//
-//	while (cmd)
-//	{
-//		i = 0;
-//		while (cmd->cmd_param[i])
-//		{
-//			printf("name: %-15s\n", cmd->cmd_param[i]);
-//			i++;
-//		}
-//		cmd = cmd->next;
-//	}
-//}
-
-//int	main(int ac, char **av, char **env)
-//{
-//	(void)ac;
-//	(void)av;
-//	t_list *env_cpy = cpy_env(env);
-//	print_env_list(env_cpy);
-//	return (0);
-//}
 
 void	print_tokens(t_token *head)
 {
@@ -270,9 +185,6 @@ void	free_cmd(t_cmd *cmd)
 			}
 			free(tmp->cmd_param);
 		}
-//		free(tmp->file_out);
-//		free(tmp->file_in);
-//		free(tmp->eof);
 		if (tmp->file)
 			free_file_list(tmp->file);
 		free(tmp);
@@ -322,9 +234,9 @@ int main(int ac, char **av, char **env)
 		return (1);
 	}
 	signal(SIGINT, sig_handler);
+	signal(SIGQUIT, SIG_IGN);
 	while (1)
 	{
-		handle_sig();
 		cwd = getcwd(NULL, 0);
 		if (!cwd)
 		{

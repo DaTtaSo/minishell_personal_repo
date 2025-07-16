@@ -10,29 +10,23 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../includes/minishell.h"
+#include "minishell.h"
 
 void	init_data(t_data *data, int ac, char **av)
 {
 	(void)ac;
 	(void)av;
-	data->token = NULL;
-	data->cmd = NULL;
-	data->env = NULL;
+	ft_bzero(data, sizeof(t_data));
 }
 
 int	ft_isspace(char c)
 {
-	if (c == ' ' || c == '\t' || c == '\n' || c == '\r' || c == '\v' || c == '\f')
-		return (1);
-	return (0);
+	return (c == ' ' || c == '\t' || c == '\n' || c == '\r' || c == '\v' || c == '\f');
 }
 
 int	is_operator(char c)
 {
-	if (c == '|' || c == '<' || c == '>')
-		return (1);
-	return (0);
+	return (c == '|' || c == '<' || c == '>');
 }
 
 char *extract_word(char *str, int *i)

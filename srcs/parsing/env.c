@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../includes/minishell.h"
+#include "minishell.h"
 
 char	*char_to_str(char c)
 {
@@ -53,6 +53,7 @@ char *expand_env_var(t_list *env_cpy, char *str)
 	char	*res;
 	char	*name;
 	char	*value;
+	char	*clean;
 
 	res = ft_strdup("");
 	i = 0;
@@ -84,13 +85,35 @@ char *expand_env_var(t_list *env_cpy, char *str)
 			name = ft_substr(str, start, i - start);
 			value = get_env_value(env_cpy, name);
 			free (name);
-			res = ft_strjoin(res, value);
+			res = join_and_free(res, ft_strdup(value));
 		}
 		else
 		{
 			res = join_and_free(res, char_to_str(str[i]));
 			i++;
 		}
+	}
+	clean = remove_quotes(res);
+	free(res);
+	return (clean);
+}
+
+char *remove_quotes(const char *src)
+{
+	char *res = ft_strdup("");
+	int i = 0;
+	char q = 0;
+	while (src[i])
+	{
+		if ((src[i] == '\'' || src[i] == '"') && q == 0)
+			q = src[i++];
+		else if (src[i] == q)
+		{
+			q = 0;
+			i++;
+		}
+		else
+			res = join_and_free(res, char_to_str(src[i++]));
 	}
 	return (res);
 }

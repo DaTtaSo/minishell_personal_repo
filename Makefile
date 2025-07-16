@@ -15,40 +15,38 @@ NAME 				= 			minishell
 
 LIBFT				=			includes/libft/libft.a
 
+LIBS				=			-lreadline
+
 HEAD 				=			minishell.h
 
 OBJ_DIR				=			obj/
 
 CC					=			cc
 
-CFLAGS				=		-Wall -Werror -MMD -MP -g3
-
-SRCS				=			$(addprefix $(SRCS_DIR), $(SRC_ACC))
+CFLAGS				=			-Wall -Werror -MMD -MP -g3 -I includes
 
 SRCS_DIR			=			srcs/
-PARSING_DIR			=			parsing/
 
-PARSING_SRCS		=			tokenize \
-								env \
+VPATH				=			srcs:srcs/parsing
+
+MAIN_SRCS			=			main 			\
+								utils 			\
+								tokenize 		\
+								env 			\
 								command_builder
 
+SRCS				=			$(addsuffix .c, $(MAIN_SRCS))
 
-MAIN_SRCS			=			main \
-								utils
+OBJ					=			$(addprefix $(OBJ_DIR),$(SRCS:.c=.o))
 
-SRC_ACC				+=			$(addprefix $(PARSING_DIR), $(addsuffix .c, $(PARSING_SRCS)))
-SRC_ACC				+=			$(addsuffix .c, $(MAIN_SRCS))
-
-OBJ			=			$(patsubst $(SRCS_DIR)%.c,$(OBJ_DIR)%.o,$(SRCS))
-
-DEP			=			$(patsubst $(SRCS_DIR)%.c,$(OBJ_DIR)%.d,$(SRCS))
+DEP					=			$(OBJ:.o=.d))
 
 all:					$(NAME)
 
 $(NAME):				$(OBJ) $(LIBFT)
-							$(CC) $(CFLAGS) $(OBJ) $(LIBFT) -lreadline -o $@
+							$(CC) $(CFLAGS) $(OBJ) $(LIBFT) $(LIBS) -o $@
 
-$(OBJ_DIR)%.o: $(SRCS_DIR)%.c
+$(OBJ_DIR)%.o: %.c
 						@mkdir -p $(dir $@)
 						$(CC) $(CFLAGS) -c $< -o $@
 
