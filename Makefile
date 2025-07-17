@@ -31,9 +31,15 @@ VPATH				=			srcs:srcs/parsing
 
 MAIN_SRCS			=			main 			\
 								utils 			\
+								free_utils		\
+								temporary_utils	\
 								tokenize 		\
+								token_utils		\
 								env 			\
-								command_builder
+								env_utils		\
+								command_builder	\
+								builder_utils	\
+								builder_utils_2
 
 SRCS				=			$(addsuffix .c, $(MAIN_SRCS))
 

@@ -12,47 +12,58 @@
 
 #include "minishell.h"
 
-char	*char_to_str(char c)
+t_list	*cpy_env(char **env)
 {
-	char	*str;
-	str = malloc(2);
-	if (!str)
-		return (NULL);
-	str[0] = c;
-	str[1] = '\0';
-	return (str);
-}
+	int		i;
+	t_list	*env_cpy;
+	t_list	*new_node;
 
-char	*join_and_free(char *s1, char *s2)
-{
-	char	*str;
-	if (!s1 || !s2)
-		return (NULL);
-	str = ft_strjoin(s1, s2);
-	free(s2);
-	free(s1);
-	return (str);
-}
-
-char	*get_env_value(t_list *env, char *name)
-{
-	while(env)
+	env_cpy = NULL;
+	i = 0;
+	while (env[i])
 	{
-		if (ft_strcmp(env->name, name) == 0)
-			return (env->content);
-		env = env->next;
+		new_node = create_env_node(env[i], &env_cpy);
+		if (!new_node)
+			return (NULL);
+		ft_lstadd_back(&env_cpy, new_node);
+		i++;
 	}
-	return (NULL);
+	return (env_cpy);
 }
 
-char *expand_env_var(t_list *env_cpy, char *str)
+t_list	*create_env_node(char *env_var, t_list **env_cpy)
 {
-	int	i;
-	int	quotes;
-	int	start;
-	char	*res;
+	int		j;
 	char	*name;
-	char	*value;
+	char	*content;
+
+	j = 0;
+	while (env_var[j] && env_var[j] != '=')
+		j++;
+	name = ft_substr(env_var, 0, j);
+	if (!name)
+	{
+		free_env(*env_cpy);
+		return (NULL);
+	}
+	if (env_var[j] == '=')
+		content = ft_strdup(&env_var[j + 1]);
+	else
+		content = NULL;
+	if (env_var[j] == '=' && !content)
+	{
+		free(name);
+		free_env(*env_cpy);
+		return (NULL);
+	}
+	return (ft_lstnew(name, content));
+}
+
+char	*expand_env_var(t_list *env_cpy, char *str)
+{
+	int		i;
+	int		quotes;
+	char	*res;
 	char	*clean;
 
 	res = ft_strdup("");
@@ -60,33 +71,11 @@ char *expand_env_var(t_list *env_cpy, char *str)
 	quotes = 0;
 	while (str[i])
 	{
-		if (str[i] == '\'' && quotes != 2)
-		{
-			if (quotes == 1)
-				quotes = 0;
-			else
-				quotes = 1;
-			res = join_and_free(res, char_to_str(str[i++]));
-		}
-		else if (str[i] == '\"' && quotes != 1)
-		{
-			if (quotes == 2)
-				quotes = 0;
-			else
-				quotes = 2;
-			res = join_and_free(res, char_to_str(str[i++]));
-		}
-		else if (str[i] == '$' && quotes != 1)
-		{
-			i++;
-			start = i;
-			while (str[i] && (ft_isalnum(str[i]) || str[i] == '_'))
-				i++;
-			name = ft_substr(str, start, i - start);
-			value = get_env_value(env_cpy, name);
-			free (name);
-			res = join_and_free(res, ft_strdup(value));
-		}
+		handle_quote(&i, &quotes, str, &res);
+		if (!str[i])
+			break ;
+		if (str[i] == '$' && quotes != 1)
+			expend_env_var_bis(&i, str, env_cpy, &res);
 		else
 		{
 			res = join_and_free(res, char_to_str(str[i]));
@@ -98,22 +87,38 @@ char *expand_env_var(t_list *env_cpy, char *str)
 	return (clean);
 }
 
-char *remove_quotes(const char *src)
+void	handle_quote(int *i, int *quotes, char *str, char **res)
 {
-	char *res = ft_strdup("");
-	int i = 0;
-	char q = 0;
-	while (src[i])
+	if (str[(*i)] == '\'' && (*quotes) != 2)
 	{
-		if ((src[i] == '\'' || src[i] == '"') && q == 0)
-			q = src[i++];
-		else if (src[i] == q)
-		{
-			q = 0;
-			i++;
-		}
+		if ((*quotes) == 1)
+			(*quotes) = 0;
 		else
-			res = join_and_free(res, char_to_str(src[i++]));
+			(*quotes) = 1;
+		*res = join_and_free(*res, char_to_str(str[(*i)++]));
 	}
-	return (res);
+	else if (str[(*i)] == '\"' && (*quotes) != 1)
+	{
+		if ((*quotes) == 2)
+			(*quotes) = 0;
+		else
+			(*quotes) = 2;
+		*res = join_and_free(*res, char_to_str(str[(*i)++]));
+	}
+}
+
+void	expend_env_var_bis(int *i, char *str, t_list *env_cpy, char **res)
+{
+	char	*name;
+	char	*value;
+	int		start;
+
+	(*i)++;
+	start = (*i);
+	while (str[(*i)] && (ft_isalnum(str[(*i)]) || str[(*i)] == '_'))
+		(*i)++;
+	name = ft_substr(str, start, (*i) - start);
+	value = get_env_value(env_cpy, name);
+	free (name);
+	*res = join_and_free(*res, ft_strdup(value));
 }

@@ -12,53 +12,98 @@
 
 #include "minishell.h"
 
-void	cmd_count(t_token *token, int *nb_pipe)
+t_data	cmd_builder(t_data *data)
 {
-	t_token *tmp;
+	t_token	*token;
+	t_cmd	*current_cmd;
+	int		param_index;
 
-	if (!token)
+	param_index = 0;
+	if (!data || !data->token)
+		return (*data);
+	data->cmd = cmd_list(data->token);
+	if (!data->cmd)
+		return (*data);
+	current_cmd = data->cmd;
+	token = data->token;
+	while (token)
+		cmd_builder_bis(&token, &current_cmd, &param_index);
+	if (current_cmd && current_cmd->cmd_param)
+		current_cmd->cmd_param[param_index] = NULL;
+	return (*data);
+}
+
+void	cmd_builder_bis(t_token **token, t_cmd **current_cmd, int *param_index)
+{
+	if (!token || !(*token) || !current_cmd || !(*current_cmd))
 		return ;
-	tmp = token;
-	while(tmp)
+	if ((*token)->type == WORD)
 	{
-		if (tmp->type == PIPE)
-			(*nb_pipe)++;
-		tmp = tmp->next;
-	}
-}
-
-int	is_redirection(int type)
-{
-	return (type == REDIR_IN || type == REDIR_OUT
-			|| type == HEREDOC || type == APPEND);
-}
-
-int	get_cmd_size(t_token *token)
-{
-	t_token	*tmp;
-	int	nb_param;
-
-	nb_param = 1;
-	if (!token)
-		return (0);
-	tmp = token;
-	while(tmp && tmp->type != PIPE)
-	{
-		if (is_redirection(tmp->type))
+		if ((*current_cmd) && (*current_cmd)->cmd_param)
 		{
-			tmp = tmp->next;
-			if (tmp)
-				tmp = tmp->next;
-			continue ;
+			(*current_cmd)->cmd_param[(*param_index)]
+				= ft_strdup((*token)->str);
+			(*param_index)++;
 		}
-		if (tmp->type == WORD )
-			nb_param++;
-		tmp = tmp->next;
+		(*token) = (*token)->next;
 	}
-	return (nb_param);
+	else if (is_redirection((*token)->type))
+		handle_redirection(&(*current_cmd)->file, &(*token));
+	else if ((*token)->type == PIPE)
+	{
+		if ((*current_cmd) && (*current_cmd)->cmd_param)
+			(*current_cmd)->cmd_param[(*param_index)] = NULL;
+		(*current_cmd) = (*current_cmd)->next;
+		(*param_index) = 0;
+		(*token) = (*token)->next;
+	}
 }
 
-t_cmd *create_new_cmd(t_token *token)
+t_cmd	*cmd_list(t_token *token)
+{
+	t_cmd	*head;
+	t_cmd	*current;
+	t_token	*current_token;
+	int		nb_pipe;
+	int		i;
+
+	i = 0;
+	nb_pipe = 0;
+	head = NULL;
+	current = NULL;
+	current_token = token;
+	cmd_count(token, &nb_pipe);
+	while (i <= nb_pipe)
+	{
+		if (cmd_list_bis(&token, &head, &current) != 0)
+			return (NULL);
+		i++;
+	}
+	return (head);
+}
+
+int	cmd_list_bis(t_token **current_token, t_cmd **head, t_cmd **current)
+{
+	t_cmd	*new_cmd;
+
+	if (!current_token || !(*current_token))
+		return (-1);
+	new_cmd = create_new_cmd(*current_token);
+	if (!new_cmd)
+		return (-1);
+	if (!(*head))
+		(*head) = new_cmd;
+	else
+		(*current)->next = new_cmd;
+	(*current) = new_cmd;
+	while (*current_token && (*current_token)->type != PIPE)
+		*current_token = (*current_token)->next;
+	if (*current_token)
+		*current_token = (*current_token)->next;
+	return (0);
+}
+
+t_cmd	*create_new_cmd(t_token *token)
 {
 	t_cmd	*new_cmd;
 	int		param_size;
@@ -85,41 +130,39 @@ t_cmd *create_new_cmd(t_token *token)
 	return (new_cmd);
 }
 
-t_cmd *cmd_list(t_token *token)
-{
-	t_cmd	*head;
-	t_cmd	*current;
-	t_token	*current_token;
-	int	nb_pipe;
-	int	i;
-
-	i = 0;
-	nb_pipe = 0;
-	head = NULL;
-	current = NULL;
-	current_token = token;
-	cmd_count(token, &nb_pipe);
-	while (i <= nb_pipe)
-	{
-		t_cmd *new_cmd = create_new_cmd(current_token);
-		if (!new_cmd)
-		{
-//			free_cmd_list(head);
-			return (NULL);
-		}
-		if (!head)
-			head = new_cmd;
-		else
-			current->next = new_cmd;
-		current = new_cmd;
-		i++;
-		while (current_token && current_token->type != PIPE)
-			current_token = current_token->next;
-		if (current_token)
-			current_token = current_token->next;
-	}
-	return (head);
-}
+//t_cmd	*cmd_list(t_token *token)
+//{
+//	t_cmd		*head;
+//	t_cmd		*current;
+//	t_cmd		*new_cmd;
+//	t_token		*current_token;
+//	int			nb_pipe;
+//	int			i;
+//
+//	i = 0;
+//	nb_pipe = 0;
+//	head = NULL;
+//	current = NULL;
+//	current_token = token;
+//	cmd_count(token, &nb_pipe);
+//	while (i <= nb_pipe)
+//	{
+//		new_cmd = create_new_cmd(current_token);
+//		if (!new_cmd)
+//			return (NULL);
+//		if (!head)
+//			head = new_cmd;
+//		else
+//			current->next = new_cmd;
+//		current = new_cmd;
+//		i++;
+//		while (current_token && current_token->type != PIPE)
+//			current_token = current_token->next;
+//		if (current_token)
+//			current_token = current_token->next;
+//	}
+//	return (head);
+//}
 
 //void	handle_redirection(t_cmd *current_cmd, t_token *token)
 //{
@@ -183,56 +226,6 @@ t_cmd *cmd_list(t_token *token)
 //	}
 //}
 
-static t_file	*file_add_back(t_file **lst)
-{
-	t_file	*new;
-	t_file	*current;
-
-	new = ft_calloc(1, sizeof(t_file));
-	if (!new)
-		return (NULL);
-	if (!*lst)
-		*lst = new;
-	else
-	{
-		current = *lst;
-		while (current->next)
-			current = current->next;
-		current->next = new;
-	}
-	return (new);
-}
-
-static void	copy_filename(t_file *current, t_token **token)
-{
-	*token = (*token)->next;
-	if (*token && (*token)->str)
-	{
-		current->file = ft_strdup((*token)->str);
-		*token = (*token)->next;
-	}
-}
-
-void	handle_redirection(t_file **files, t_token **token)
-{
-	t_file	*current;
-
-	if (!files || !token || !*token)
-		return ;
-	current = file_add_back(files);
-	if (!current)
-		return ;
-	current->type = (*token)->type;
-	if (current->type == REDIR_IN
-		|| current->type == HEREDOC
-		|| current->type == REDIR_OUT
-		|| current->type == APPEND)
-	{
-		copy_filename(current, token);
-	}
-}
-
-
 //
 //t_data	cmd_builder(t_data *data)
 //{
@@ -267,47 +260,6 @@ void	handle_redirection(t_file **files, t_token **token)
 //		cmd->cmd_param[i] = NULL;
 //	return (*data);
 //}
-
-t_data cmd_builder(t_data *data)
-{
-	t_token *token;
-	t_cmd *current_cmd;
-	int param_index;
-
-	param_index = 0;
-	if (!data || !data->token)
-		return (*data);
-	data->cmd = cmd_list(data->token);
-	if (!data->cmd)
-		return (*data);
-	current_cmd = data->cmd;
-	token = data->token;
-	while (token)
-	{
-		if (token->type == WORD)
-		{
-			if (current_cmd && current_cmd->cmd_param)
-			{
-				current_cmd->cmd_param[param_index] = ft_strdup(token->str);
-				param_index++;
-			}
-			token = token->next;
-		}
-		else if (is_redirection(token->type))
-			handle_redirection(&current_cmd->file, &token);
-		else if (token->type == PIPE)
-		{
-			if (current_cmd && current_cmd->cmd_param)
-				current_cmd->cmd_param[param_index] = NULL;
-			current_cmd = current_cmd->next;
-			param_index = 0;
-			token = token->next;
-		}
-	}
-	if (current_cmd && current_cmd->cmd_param)
-		current_cmd->cmd_param[param_index] = NULL;
-	return (*data);
-}
 
 //t_data	cmd_builder(t_data *data)
 //{

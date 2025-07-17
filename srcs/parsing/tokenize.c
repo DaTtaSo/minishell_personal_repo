@@ -11,32 +11,17 @@
 /* ************************************************************************** */
 
 #include "minishell.h"
+//#include "../../includes/minishell.h"
 
-void	init_data(t_data *data, int ac, char **av)
-{
-	(void)ac;
-	(void)av;
-	ft_bzero(data, sizeof(t_data));
-}
-
-int	ft_isspace(char c)
-{
-	return (c == ' ' || c == '\t' || c == '\n' || c == '\r' || c == '\v' || c == '\f');
-}
-
-int	is_operator(char c)
-{
-	return (c == '|' || c == '<' || c == '>');
-}
-
-char *extract_word(char *str, int *i)
+char	*extract_word(char *str, int *i)
 {
 	int	start;
 	int	quotes;
 
 	start = *i;
 	quotes = 0;
-	while (str[*i] && (quotes || (!is_operator(str[*i]) && !ft_isspace(str[*i]))))
+	while (str[*i] && (quotes || (!is_operator(str[*i])
+				&& !ft_isspace(str[*i]))))
 	{
 		if (str[*i] == '\'' && quotes != 2)
 		{
@@ -57,14 +42,11 @@ char *extract_word(char *str, int *i)
 	return (ft_substr(str, start, *i - start));
 }
 
-t_token_type get_operator_type(char *str, int *i)
+t_token_type	get_operator_type(char *str, int *i)
 {
-	if (str[(*i)] == '<' && str[(*i)+ 1] == '<')
-	{
-		(*i) += 2;
+	if (str[(*i)] == '<' && str[(*i) + 1] == '<' && trickster(i))
 		return (HEREDOC);
-	}
-	else if (str[(*i)] == '>' && str[(*i)+ 1] == '>')
+	else if (str[(*i)] == '>' && str[(*i) + 1] == '>')
 	{
 		(*i) += 2;
 		return (APPEND);
@@ -87,24 +69,9 @@ t_token_type get_operator_type(char *str, int *i)
 	return (WORD);
 }
 
-char	*get_operator_str(t_token_type type)
-{
-	if (type == HEREDOC)
-		return ("<<");
-	if (type == APPEND)
-		return (">>");
-	if (type == REDIR_IN)
-		return ("<");
-	if (type == REDIR_OUT)
-		return (">");
-	if (type == PIPE)
-		return ("|");
-	return (NULL);
-}
-
 t_token	*create_token(char *str, t_token_type type)
 {
-	t_token *new_token;
+	t_token	*new_token;
 
 	new_token = (t_token *)malloc(sizeof(t_token));
 	if (!new_token)
@@ -120,41 +87,46 @@ t_token	*create_token(char *str, t_token_type type)
 	return (new_token);
 }
 
+t_token	*tokenize_bis(int *i, char *str)
+{
+	t_token_type	type;
+	t_token			*new_token;
+	char			*word;
+
+	while (str[(*i)] && ft_isspace(str[(*i)]))
+		(*i)++;
+	if (!str[(*i)])
+		return (NULL);
+	if (is_operator(str[(*i)]))
+	{
+		type = get_operator_type(str, i);
+		new_token = create_token(get_operator_str(type), type);
+	}
+	else
+	{
+		type = WORD;
+		word = extract_word(str, i);
+		new_token = create_token(word, type);
+		free(word);
+	}
+	return (new_token);
+}
+
 t_token	*tokenize(t_data *data, char *str)
 {
-	t_token *new_token;
-	t_token **current;
-	t_token_type	type;
-	char	*word;
-	int	i;
-	int	in_redirection;
+	t_token	**current;
+	t_token	*new_token;
+	int		i;
 
+	i = 0;
 	new_token = NULL;
 	current = &new_token;
-	i = 0;
-	while (str[i])
+	while (1)
 	{
-		while (str[i] && ft_isspace(str[i]))
-			i++;
-		if(!str[i])
+		*current = tokenize_bis(&i, str);
+		if (!*current)
+		{
 			break ;
-		if (is_operator(str[i]))
-		{
-			type = get_operator_type(str, &i);
-			*current = create_token(get_operator_str(type), type);
-			in_redirection = 1;
-		}
-		else
-		{
-			type = WORD;
-			word = extract_word(str, &i);
-			*current = create_token(word, type);
-			free(word);
-		}
-		if(!*current)
-		{
-			free_tokens(new_token);
-			return (NULL);
 		}
 		current = &(*current)->next;
 	}
