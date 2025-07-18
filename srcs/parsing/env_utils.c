@@ -71,3 +71,10 @@ char	*remove_quotes(const char *src)
 	}
 	return (res);
 }
+
+void	check_unclosed_quotes(int quotes)
+{
+	if (quotes)
+		perror("synthax error : quotes unclosed\n");
+	return ;
+}

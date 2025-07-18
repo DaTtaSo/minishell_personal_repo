@@ -60,7 +60,10 @@ typedef struct s_data
 	t_cmd	*cmd;
 	t_list	*env;
 	t_token	*token;
+	int		exit_status;
 }	t_data;
+
+extern int	g_signal_received;
 
 /*parsing*/
 
@@ -80,7 +83,7 @@ int				trickster(int *i);
 
 /*env*/
 t_list			*cpy_env(char **env);
-char			*expand_env_var(t_list *env_cpy, char *str);
+char			*expand_env_var(t_data *data, char *str);
 t_list			*create_env_node(char *env_var, t_list **env_cpy);
 void			handle_quote(int *i, int *quotes, char *str, char **res);
 void			expend_env_var_bis(int *i, char *str,
@@ -91,6 +94,7 @@ char			*char_to_str(char c);
 char			*join_and_free(char *s1, char *s2);
 char			*remove_quotes(const char *src);
 char			*get_env_value(t_list *env, char *name);
+void			check_unclosed_quotes(int quotes);
 
 /*builder*/
 t_data			cmd_builder(t_data *data);

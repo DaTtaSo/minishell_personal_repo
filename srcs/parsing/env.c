@@ -59,7 +59,17 @@ t_list	*create_env_node(char *env_var, t_list **env_cpy)
 	return (ft_lstnew(name, content));
 }
 
-char	*expand_env_var(t_list *env_cpy, char *str)
+void	manage_exit_status(t_data **data, int *i, char *str, char **res)
+{
+	char	*value;
+
+	value = ft_itoa((*data)->exit_status);
+	*res = join_and_free(*res, ft_strdup(value));
+	free(value);
+	(*i) += 2;
+}
+
+char	*expand_env_var(t_data *data, char *str)
 {
 	int		i;
 	int		quotes;
@@ -74,14 +84,17 @@ char	*expand_env_var(t_list *env_cpy, char *str)
 		handle_quote(&i, &quotes, str, &res);
 		if (!str[i])
 			break ;
-		if (str[i] == '$' && quotes != 1)
-			expend_env_var_bis(&i, str, env_cpy, &res);
+		if (str[i] == '$' && str[i + 1] == '?')
+			manage_exit_status(&data, &i, str, &res);
+		else if (str[i] == '$' && quotes != 1)
+			expend_env_var_bis(&i, str, data->env, &res);
 		else
 		{
 			res = join_and_free(res, char_to_str(str[i]));
 			i++;
 		}
 	}
+	check_unclosed_quotes(quotes);
 	clean = remove_quotes(res);
 	free(res);
 	return (clean);

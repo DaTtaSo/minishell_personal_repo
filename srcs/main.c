@@ -12,21 +12,51 @@
 
 #include "minishell.h"
 
+int	g_signal_received;
+
 void	sig_handler(int sig)
 {
+	(void)sig;
+	write(1, "\n", 1);
 	rl_replace_line("", 0);
-	write(STDOUT_FILENO, "\n", 1);
 	rl_on_new_line();
 	rl_redisplay();
+	g_signal_received = 1;
+}
+
+int	check_synthax(t_token *token)
+{
+	if (token->type == PIPE)
+	{
+		perror("minishell: syntax error near unexpected token `|'\n");
+		return (1);
+	}
+	while (token)
+	{
+		if (token->type == PIPE && (!token->next || token->next->type == PIPE))
+		{
+			perror("minishell: syntax error near unexpected token `|'\n");
+			return (1);
+		}
+		else if (!(token->type == PIPE || token->type == WORD)
+			&& (!token->next || token->next->type != WORD))
+		{
+			perror("minishell: syntax error near unexpected token"
+				" '< > << >>'\n");
+			return (1);
+		}
+		token = token->next;
+	}
+	return (0);
 }
 
 int	main(int ac, char **av, char **env)
 {
-	t_data	data;
-	char	*cwd;
-	char	*expanded;
-	char	*read;
-	char	*prompt;
+	t_data				data;
+	char				*cwd;
+	char				*expanded;
+	char				*read;
+	char				*prompt;
 
 	init_data(&data, ac, av);
 	data.env = cpy_env(env);
@@ -55,6 +85,9 @@ int	main(int ac, char **av, char **env)
 			break ;
 		}
 		read = readline(prompt);
+		if (g_signal_received)
+			data.exit_status = 130;
+		g_signal_received = 0;
 		free(prompt);
 		if (!read)
 			break ;
@@ -64,7 +97,7 @@ int	main(int ac, char **av, char **env)
 			continue ;
 		}
 		add_history(read);
-		expanded = expand_env_var(data.env, read);
+		expanded = expand_env_var(&data, read);
 		free(read);
 		if (!expanded)
 		{
@@ -73,7 +106,7 @@ int	main(int ac, char **av, char **env)
 		}
 		data.token = tokenize(&data, expanded);
 		free(expanded);
-		if (!data.token)
+		if (!data.token || check_synthax(data.token))
 			continue ;
 		data = cmd_builder(&data);
 		print_tokens(data.token);
