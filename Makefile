@@ -27,8 +27,10 @@ CFLAGS				=			-Wall -Werror -MMD -MP -g3 -I includes
 
 SRCS_DIR			=			srcs/
 
-VPATH				=			srcs:srcs/parsing \
-VPATH				=			srcs:srcs/exec
+VPATH				=			srcs:srcs/parsing	\
+VPATH				=			srcs:srcs/exec		\
+VPATH				=			srcs:srcs/utils		\
+VPATH				=			srcs:srcs/builtins	\
 
 MAIN_SRCS			=			main 			\
 								utils 			\
