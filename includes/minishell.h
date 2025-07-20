@@ -116,7 +116,6 @@ char				*char_to_str(char c);
 char				*join_and_free(char *s1, char *s2);
 char				*remove_quotes(const char *src);
 char				*get_env_value(t_list *env, char *name);
-//void				check_unclosed_quotes(int quotes);
 int					check_unclosed_quotes(int quotes);
 // env_utils_2
 void				manage_exit_status(t_data **data, int *i, char *str,
@@ -142,7 +141,7 @@ void				copy_filename(t_file *current, t_token **token);
 
 // main
 void				init_data(t_data *data, int ac, char **av);
-int					check_synthax(t_token *token);
+int					check_synthax(t_data *data);
 t_list				*make_env(void);
 t_list				*parse_env(char **envp);
 int					ft_exec(t_data *data, pid_t pid);
@@ -193,13 +192,13 @@ int					er_msg_free_tok(char *arg, char *msg, t_token **token);
 
 // ft_free
 void				ft_free_all_lst(t_list *lst);
-void				free_file_list(t_file *file);
-void				free_tokens(t_token *token);
+void				free_file_list(t_file **file);
+void				free_tokens(t_token **token);
 void				free_env(t_list *env);
 int					ft_free_dtab(char **tab);
 void				free_all(t_data *data, char *read);
 void				free_iteration_data(t_data *data);
-void				free_cmd(t_cmd *cmd);
+void				free_cmd(t_cmd **cmd);
 void				ft_free_lst(t_list *lst);
 
 // ft_print

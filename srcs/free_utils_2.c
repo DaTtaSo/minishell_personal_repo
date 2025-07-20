@@ -54,12 +54,12 @@ void	free_iteration_data(t_data *data)
 {
 	if (data->token)
 	{
-		free_tokens(data->token);
+		free_tokens(&data->token);
 		data->token = NULL;
 	}
 	if (data->cmd)
 	{
-		free_cmd(data->cmd);
+		free_cmd(&data->cmd);
 		data->cmd = NULL;
 	}
 }

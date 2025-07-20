@@ -102,28 +102,43 @@ void	ft_heredoc(t_data *data)
 
 int	er_msg_free_tok(char *arg, char *msg, t_token **token)
 {
-	free_tokens(*token);
-	return (ft_error_msg(arg, msg));
+	char	*tmp;
+	int		res;
+
+	tmp = NULL;
+	if (arg)
+		tmp = ft_strdup(arg);
+	if (token)
+	{
+		free_tokens(token);
+		token = NULL;
+	}
+	res = ft_error_msg(tmp, msg);
+	free(tmp);
+	return (res);
 }
 
-int	check_synthax(t_token *token)
+int	check_synthax(t_data *data)
 {
-	if (!token->str)
-		return (er_msg_free_tok(NULL, "command not found", &token));
+	t_token *token;
+
+	token = data->token;
+	if (!(token->str))
+		return (er_msg_free_tok(NULL, "command not found", &data->token));
 	if (token->type == PIPE)
-		return (er_msg_free_tok("|",
-				"syntax error near unexpected token", &token));
+		return (er_msg_free_tok(token->str,
+				"syntax error near unexpected token", &data->token));
 	while (token)
 	{
 		if ((!token->str || token->str[0] == '\0'))
-			return (er_msg_free_tok(token->str, "command not found", &token));
+			return (er_msg_free_tok(token->str, "command not found", &data->token));
 		if (token->type == PIPE && (!token->next || token->next->type == PIPE))
 			return (er_msg_free_tok(token->str,
-					"syntax error near unexpected token", &token));
+					"syntax error near unexpected token", &data->token));
 		else if (!(token->type == PIPE || token->type == WORD)
 			&& (!token->next || token->next->type != WORD))
 			return (er_msg_free_tok(token->str,
-					"syntax error near unexpected token", &token));
+					"syntax error near unexpected token", &data->token));
 		token = token->next;
 	}
 	return (0);
@@ -366,8 +381,8 @@ int	main(int ac, char **av, char **env)
 		}
 		data.token = tokenize(&data, expanded);
 		free(expanded);
-		if (!data.token || check_synthax(data.token))
-			continue ;
+		if (!data.token || check_synthax(&data))
+			continue;
 		data = cmd_builder(&data);
 //		print_tokens(data.token);
 //		print(data.cmd);

@@ -33,6 +33,7 @@ VPATH				=			srcs:srcs/exec
 MAIN_SRCS			=			main 			\
 								utils 			\
 								free_utils		\
+								free_utils_2	\
 								temporary_utils	\
 								tokenize 		\
 								token_utils		\
@@ -47,8 +48,7 @@ MAIN_SRCS			=			main 			\
 								ft_export		\
 								ft_pwd		\
 								get_cmd		\
-								redirect		\
-								ft_free
+								redirect
 
 SRCS				=			$(addsuffix .c, $(MAIN_SRCS))
 
