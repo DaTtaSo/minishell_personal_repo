@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 
 #include "minishell.h"
-//#include "../../includes/minishell.h"
 
 void	cmd_count(t_token *token, int *nb_pipe)
 {
@@ -84,7 +83,7 @@ void	copy_filename(t_file *current, t_token **token)
 	*token = (*token)->next;
 	if (*token && (*token)->str)
 	{
-		current->file = ft_strdup((*token)->str);
+		current->filename = ft_strdup((*token)->str);
 		*token = (*token)->next;
 	}
 }

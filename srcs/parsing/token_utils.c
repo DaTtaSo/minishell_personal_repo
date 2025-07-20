@@ -11,15 +11,6 @@
 /* ************************************************************************** */
 
 #include "minishell.h"
-//#include "../../includes/minishell.h"
-
-void	init_data(t_data *data, int ac, char **av)
-{
-	(void)ac;
-	(void)av;
-	ft_bzero(data, sizeof(t_data));
-	g_signal_received = 0;
-}
 
 int	ft_isspace(char c)
 {

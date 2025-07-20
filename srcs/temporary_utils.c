@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 
 #include "minishell.h"
-//#include "../includes/minishell.h"
 
 void	print(t_cmd *cmd)
 {
@@ -50,13 +49,23 @@ void	print(t_cmd *cmd)
 		t_file *file = cmd->file;
 		while (file)
 		{
-			printf("  file: '%s'\n", file->file ? file->file : "(none)");
+			printf("  file: '%s'\n", file->filename ? file->filename : "(none)");
 			printf("  type: '%d'\n", file->type);
 			file = file->next;
 		}
 		cmd = cmd->next;
 	}
 	printf("Done printing commands\n");
+}
+
+void	print_list(t_list *lst)
+{
+	while (lst)
+	{
+		printf("name: %s \ncontent: %s\n\n", lst->name ? lst->name : "(null)",
+			   lst->content ? lst->content : "(null)");
+		lst = lst->next;
+	}
 }
 
 void	print_tokens(t_token *head)

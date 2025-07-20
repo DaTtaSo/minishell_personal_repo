@@ -27,7 +27,8 @@ CFLAGS				=			-Wall -Werror -MMD -MP -g3 -I includes
 
 SRCS_DIR			=			srcs/
 
-VPATH				=			srcs:srcs/parsing
+VPATH				=			srcs:srcs/parsing \
+VPATH				=			srcs:srcs/exec
 
 MAIN_SRCS			=			main 			\
 								utils 			\
@@ -37,9 +38,17 @@ MAIN_SRCS			=			main 			\
 								token_utils		\
 								env 			\
 								env_utils		\
+								env_utils_2		\
 								command_builder	\
 								builder_utils	\
-								builder_utils_2
+								builder_utils_2	\
+								builtins_env	\
+								ft_cd			\
+								ft_export		\
+								ft_pwd		\
+								get_cmd		\
+								redirect		\
+								ft_free
 
 SRCS				=			$(addsuffix .c, $(MAIN_SRCS))
 

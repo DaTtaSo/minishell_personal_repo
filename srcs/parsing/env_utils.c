@@ -11,13 +11,12 @@
 /* ************************************************************************** */
 
 #include "minishell.h"
-//#include "../../includes/minishell.h"
 
 char	*char_to_str(char c)
 {
 	char	*str;
 
-	str = malloc(2);
+	str = malloc(sizeof(char) * 2);
 	if (!str)
 		return (NULL);
 	str[0] = c;
@@ -30,10 +29,14 @@ char	*join_and_free(char *s1, char *s2)
 	char	*str;
 
 	if (!s1 || !s2)
+	{
+		free(s1);
+		free(s2);
 		return (NULL);
+	}
 	str = ft_strjoin(s1, s2);
-	free(s2);
 	free(s1);
+	free(s2);
 	return (str);
 }
 
@@ -72,9 +75,12 @@ char	*remove_quotes(const char *src)
 	return (res);
 }
 
-void	check_unclosed_quotes(int quotes)
+int	check_unclosed_quotes(int quotes)
 {
-	if (quotes)
-		perror("synthax error : quotes unclosed\n");
-	return ;
+	if (quotes != 0)
+	{
+		ft_putstr_fd("minishell: syntax error: quotes unclosed\n", 2);
+		return (1);
+	}
+	return (0);
 }

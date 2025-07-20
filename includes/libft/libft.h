@@ -41,6 +41,8 @@ size_t	ft_strlcat(char *dest, const char *src, size_t size);
 char	*ft_itoa(int n);
 char	*ft_strdup(const char *s);
 char	*ft_strchr(const char *s, int c);
+int		ft_strcmp(char *s1, char *s2);
+char	*ft_strndup(const char *s, int n);
 char	**ft_split(char const *s, char c);
 char	*ft_strrchr(const char *s, int c);
 char	*ft_strjoin(char const *s1, char const *s2);

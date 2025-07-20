@@ -48,8 +48,8 @@ void	free_file_list(t_file *file)
 	{
 		tmp = file;
 		file = file->next;
-		if (tmp->file)
-			free(tmp->file);
+		if (tmp->filename)
+			free(tmp->filename);
 		free(tmp);
 	}
 }

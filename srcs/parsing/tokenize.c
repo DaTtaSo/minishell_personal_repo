@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 
 #include "minishell.h"
-//#include "../../includes/minishell.h"
 
 char	*extract_word(char *str, int *i)
 {
