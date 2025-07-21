@@ -54,6 +54,8 @@ void	free_file_list(t_file **file)
 		tmp = (*file)->next;
 		if ((*file)->filename)
 			free((*file)->filename);
+		if ((*file)->eof)
+			free((*file)->eof);
 		free(*file);
 		*file = tmp;
 	}

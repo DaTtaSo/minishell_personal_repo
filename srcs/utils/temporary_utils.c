@@ -50,6 +50,7 @@ void	print(t_cmd *cmd)
 		while (file)
 		{
 			printf("  file: '%s'\n", file->filename ? file->filename : "(none)");
+			printf("  eof: '%s'\n", file->eof ? file->eof : "(none)");
 			printf("  type: '%d'\n", file->type);
 			file = file->next;
 		}

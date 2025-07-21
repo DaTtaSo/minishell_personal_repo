@@ -391,7 +391,7 @@ int	main(int ac, char **av, char **env)
 		data = cmd_builder(&data);
 		ft_exec(&data, data.pid);
 //		print_tokens(data.token);
-//		print(data.cmd);
+		print(data.cmd);
 		free_iteration_data(&data);
 	}
 	rl_clear_history();

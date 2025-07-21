@@ -128,6 +128,7 @@ int					get_cmd_size(t_token *token);
 int					is_redirection(int type);
 t_file				*file_add_back(t_file **lst);
 void				copy_filename(t_file *current, t_token **token);
+void	copy_eof(t_file *current, t_token **token);
 
 /////////////*exec*/////////////
 
