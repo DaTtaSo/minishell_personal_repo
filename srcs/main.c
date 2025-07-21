@@ -12,16 +12,24 @@
 
 #include "minishell.h"
 
-int	g_signal_received;
 
-void	sig_handler(int sig)
+volatile sig_atomic_t	g_exit_status = 0;
+
+void	sigint_handler(int sig)
 {
 	(void)sig;
 	write(1, "\n", 1);
 	rl_replace_line("", 0);
 	rl_on_new_line();
 	rl_redisplay();
-	g_signal_received = 1;
+	g_exit_status = 1;
+}
+
+void	sigquit_handler(int sig)
+{
+	(void)sig;
+	printf("Quit (core dumped)\n");
+	g_exit_status = 131;
 }
 
 void	init_data(t_data *data, int ac, char **av)
@@ -34,13 +42,13 @@ void	init_data(t_data *data, int ac, char **av)
 	data->fd[0] = -1;
 	data->fd[1] = -1;
 	data->prev_fd = -1;
-	data->error = -1;
+	data->exit_status = -1;
 	if (!data->stdin_save || !data->stdout_save)
 	{
 		perror("save dup failed\n");
 		exit(1);
 	}
-	g_signal_received = 0;
+	g_exit_status = 0;
 }
 
 int	count_heredoc(t_token *cmd_file)
@@ -287,8 +295,8 @@ int	ft_exec(t_data *data, pid_t pid)
 	{
 		if (cmd->next && pipe(data->fd) == -1)
 			return (printf("pipe error\n"), 1);
-		path_cmd = ft_path(cmd->cmd_param[0], data->env, &data->error);
-		if (data->error == 127 || data->error == 126)
+		path_cmd = ft_path(cmd->cmd_param[0], data->env, &data->exit_status);
+		if (data->exit_status == 127 || data->exit_status == 126)
 		{
 			cmd = cmd->next;
 			continue ;
@@ -303,14 +311,14 @@ int	ft_exec(t_data *data, pid_t pid)
 		cmd = cmd->next;
 	}
 	data->prev_fd = -1;
-	return (ft_wait(data->cmd, pid, &data->error));
+	return (ft_wait(data->cmd, pid, &data->exit_status));
 }
 
-int	ft_wait(t_cmd *head, pid_t pid, int *error)
+int	ft_wait(t_cmd *head, pid_t pid, int *exit_status)
 {
 	while (head)
 	{
-		waitpid(-1, error, 0);
+		waitpid(-1, exit_status, 0);
 		head = head->next;
 	}
 	return (0);
@@ -320,7 +328,6 @@ int	main(int ac, char **av, char **env)
 {
 	t_data				data;
 	char				*cwd;
-	char				*expanded;
 	char				*read;
 	char				*prompt;
 
@@ -338,8 +345,9 @@ int	main(int ac, char **av, char **env)
 		perror("error dup save");
 		return (1);
 	}
-	signal(SIGINT, sig_handler);
+	signal(SIGINT, sigint_handler);
 	signal(SIGQUIT, SIG_IGN);
+	signal(SIGQUIT, sigquit_handler);
 	while (1)
 	{
 		dup2(data.stdin_save, STDIN_FILENO);
@@ -360,9 +368,9 @@ int	main(int ac, char **av, char **env)
 			break ;
 		}
 		read = readline(prompt);
-		if (g_signal_received)
+		if (g_exit_status)
 			data.exit_status = 130;
-		g_signal_received = 0;
+		g_exit_status = 0;
 		free(prompt);
 		if (!read)
 			break ;
@@ -372,21 +380,18 @@ int	main(int ac, char **av, char **env)
 			continue ;
 		}
 		add_history(read);
-		expanded = expand_env_var(&data, read);
+		data.token = tokenize(&data, read);
 		free(read);
-		if (!expanded)
+		if (!data.token || check_synthax(&data))
 		{
-			perror("Error: Environment expansion failed\n");
+			free_tokens(&data.token);
 			continue ;
 		}
-		data.token = tokenize(&data, expanded);
-		free(expanded);
-		if (!data.token || check_synthax(&data))
-			continue;
+		expand_tokens(&data);
 		data = cmd_builder(&data);
+		ft_exec(&data, data.pid);
 //		print_tokens(data.token);
 //		print(data.cmd);
-		ft_exec(&data, data.pid);
 		free_iteration_data(&data);
 	}
 	rl_clear_history();

@@ -36,12 +36,6 @@
 //#define PIPE			4	//|
 //#define WORD			5	//cmd
 
-typedef struct s_lst
-{
-	char			*content;
-	struct s_lst	*next;
-}					t_lst;
-
 typedef struct s_file
 {
 	int				type;
@@ -83,12 +77,9 @@ typedef struct s_data
 	int				stdin_save;
 	int				fd[2];
 	int				prev_fd;
-	int				error;
 	int				exit_status;
 	pid_t			pid;
 }					t_data;
-
-extern int			g_signal_received;
 
 /////////////*parsing*/////////////
 
@@ -120,6 +111,7 @@ int					check_unclosed_quotes(int quotes);
 // env_utils_2
 void				manage_exit_status(t_data **data, int *i, char *str,
 						char **res);
+void				expand_tokens(t_data *data);
 
 // command_builder
 t_data				cmd_builder(t_data *data);
