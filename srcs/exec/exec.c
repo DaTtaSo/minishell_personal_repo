@@ -6,7 +6,7 @@
 /*   By: alarroye <alarroye@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/20 03:24:14 by alarroye          #+#    #+#             */
-/*   Updated: 2025/07/24 06:01:45 by alarroye         ###   ########lyon.fr   */
+/*   Updated: 2025/07/24 13:57:27 by alarroye         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,8 @@ void	handle_children(pid_t *pid, t_cmd *cmd, t_data *data, char *path_cmd)
 {
 	if (*pid == 0)
 	{
+		signal(SIGINT, SIG_DFL);
+		signal(SIGQUIT, SIG_DFL);
 		ft_close_save(data);
 		path_cmd = ft_path(cmd, data->env, &data->exit_status);
 		if (cmd->cmd_param[0] && is_builtins(cmd))
@@ -69,7 +71,9 @@ void	handle_children(pid_t *pid, t_cmd *cmd, t_data *data, char *path_cmd)
 int	ft_child(t_cmd *cmd, char *path_cmd, t_data *data)
 {
 	char	**env_exec;
+	t_list	*tmp_env;
 
+	tmp_env = data->env;
 	if (data->prev_fd != -1)
 	{
 		dup2(data->prev_fd, STDIN_FILENO);
@@ -85,7 +89,7 @@ int	ft_child(t_cmd *cmd, char *path_cmd, t_data *data)
 		ft_free_and_exit(*data, path_cmd);
 	if (!cmd->cmd_param[0])
 		ft_free_and_exit(*data, path_cmd);
-	env_exec = lst_in_tab(data->env);
+	env_exec = lst_in_tab(tmp_env);
 	if (!env_exec)
 		return (ft_error_msg("lst_in_tab:", "malloc failed"));
 	execve(path_cmd, cmd->cmd_param, env_exec);
@@ -115,11 +119,12 @@ int	ft_wait(t_data *data, pid_t pid)
 	w_pid = 0;
 	while (len_cmd--)
 	{
+		//traiter chaque pid independament
 		w_pid = waitpid(-1, &status, 0);
-		if (w_pid == pid && WIFEXITED(status))
-			err = WEXITSTATUS(status);
-		else if (w_pid == pid && WIFSIGNALED(status))
+		if (WIFSIGNALED(status))
 			err = (128 + WTERMSIG(status));
+		else if (w_pid == pid && WIFEXITED(status))
+			err = WEXITSTATUS(status);
 	}
 	return (err);
 }

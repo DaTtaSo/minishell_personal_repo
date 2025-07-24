@@ -17,18 +17,18 @@ volatile sig_atomic_t	g_exit_status = 0;
 void	sigint_handler(int sig)
 {
 	(void)sig;
-	write(1, "\n", 1);
+	//write(1, "\n", 1);
 	rl_replace_line("", 0);
-	rl_on_new_line();
-	rl_redisplay();
+	rl_done = 1;
+//	rl_on_new_line();
+//	rl_redisplay();
 	g_exit_status = 130;
 }
 
-void	sigquit_handler(int sig)
+void set_signals_prompt(void)
 {
-	(void)sig;
-	printf("Quit (core dumped)\n");
-	g_exit_status = 131;
+	signal(SIGINT, sigint_handler);
+	signal(SIGQUIT, SIG_IGN);
 }
 
 void	init_data(t_data *data, int ac, char **av)
@@ -194,9 +194,9 @@ void	ft_heredoc(t_file *tmp)
 	fd = ft_tmp_file(&tmp);
 	if (fd == -1)
 		return ;
-	while (1)
+	while (!g_exit_status)
 	{
-		// printf("%s", tmp->filename);
+		// pk  pa da un chid pour gestions des signaux
 		read = readline("> ");
 		if (!read)
 		{
@@ -204,6 +204,8 @@ void	ft_heredoc(t_file *tmp)
 			close(fd);
 			return ;
 		}
+		if (!*read)
+			continue ;
 		if (ft_strcmp(read, tmp->eof))
 		{
 			write(fd, read, ft_strlen(read));
@@ -224,6 +226,11 @@ void	ft_heredoc(t_file *tmp)
 	close(fd);
 }
 
+int do_nothing(void)
+{
+	return (0);
+}
+
 int	main(int ac, char **av, char **env)
 {
 	t_data	data;
@@ -233,6 +240,7 @@ int	main(int ac, char **av, char **env)
 	init_data(&data, ac, av);
 	pid = 0;
 	data.env = cpy_env(env);
+	rl_event_hook = do_nothing;
 	if (!data.env)
 	{
 		perror("Error: Failed to copy environment\n");
@@ -244,12 +252,12 @@ int	main(int ac, char **av, char **env)
 		return (ft_error_msg("dup", "dup failed"));
 	if (!data.env)
 		return (ft_error_msg("cpy_env", "Error: Failed to copy environment"));
-	signal(SIGINT, sigint_handler);
-	signal(SIGQUIT, SIG_IGN);
+	set_signals_prompt();
 	while (1)
 	{
 		dup2(data.stdin_save, STDIN_FILENO);
 		dup2(data.stdout_save, STDOUT_FILENO);
+		//printf("ici\n");
 		read = readline("minishell> ");
 		if (g_exit_status)
 			data.exit_status = 130;
@@ -278,7 +286,11 @@ int	main(int ac, char **av, char **env)
 //		 print_tokens(data.token);
 //		 print(data.cmd);
 		handle_heredoc(&data);
+		signal(SIGINT, SIG_IGN);
 		data.exit_status = ft_exec(&data, pid);
+		if (data.exit_status > 128)
+			write(1, "\n", 1);
+		set_signals_prompt();
 		free_iteration_data(&data);
 	}
 	rl_clear_history();

@@ -185,15 +185,15 @@ int					redirect_heredoc(char *file);
 /////////////*builtins*/////////////
 
 // env + unset
-int					ft_env(t_list *env);
+int					ft_env(t_list *env, char **cmd);
 int					ft_unset(t_list **env, char **a);
 int					check_params_env(char *a);
 // export
-int					ft_export(t_list **env, char **a);
+int					ft_export(t_list **env, char **a, t_data *data);
 // ft_pwd
 int					ft_pwd(void);
 // ft_cd
-int					ft_cd(t_list **env, char **cmd);
+int					ft_cd(t_list **env, char **cmd, t_data *data);
 // ft_exit
 int					ft_exit(t_data *data, t_cmd *cmd);
 
@@ -227,5 +227,9 @@ void				ft_free_lst(t_list *lst);
 void				print(t_cmd *cmd);
 void				print_list(t_list *lst);
 void				print_tokens(t_token *head);
+
+//signaux
+
+void				set_signals_prompt(void);
 
 #endif

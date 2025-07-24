@@ -76,7 +76,7 @@ char	*expand_env_var(t_data *data, char *str)
 			continue ;
 		if (!str[i])
 			break ;
-		if (str[i] == '$' && str[i + 1] == '?')
+		if (str[i] == '$' && str[i + 1] == '?' && quotes != 1)
 			manage_exit_status(&data, &i, str, &res);
 		else if (str[i] == '$' && quotes != 1)
 			expend_env_var_bis(&i, str, data->env, &res);

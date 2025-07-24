@@ -26,7 +26,7 @@ void	expand_tokens(t_data *data)
 {
 	t_token	*current;
 	char	*expanded;
-	char	*quotes_removed;
+//	char	*quotes_removed;
 
 	current = data->token;
 	while (current)
@@ -39,15 +39,16 @@ void	expand_tokens(t_data *data)
 				current = current->next;
 				continue ;
 			}
-			quotes_removed = remove_quotes(expanded);
-			free(expanded);
-			if (!quotes_removed)
-			{
-				current = current->next;
-				continue ;
-			}
+//			quotes_removed = remove_quotes(expanded);
+//			free(expanded);
+//			if (!quotes_removed)
+//			{
+//				current = current->next;
+//				continue ;
+//			}
 			free(current->str);
-			current->str = quotes_removed;
+//			current->str = quotes_removed;
+			current->str = expanded;
 		}
 		current = current->next;
 	}
