@@ -196,6 +196,8 @@ int					ft_pwd(void);
 int					ft_cd(t_list **env, char **cmd, t_data *data);
 // ft_exit
 int					ft_exit(t_data *data, t_cmd *cmd);
+// fr_echo
+int					ft_echo(char **cmd_param);
 
 /////////////*other*/////////////
 // utils

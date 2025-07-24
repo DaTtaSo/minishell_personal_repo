@@ -52,8 +52,9 @@ MAIN_SRCS			=			main 			\
 								get_cmd		\
 								redirect \
 								handle_builtins \
-								exec \
-								ft_exit
+								exec			\
+								ft_exit			\
+								ft_echo
 
 SRCS				=			$(addsuffix .c, $(MAIN_SRCS))
 
