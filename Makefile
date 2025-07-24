@@ -50,7 +50,10 @@ MAIN_SRCS			=			main 			\
 								ft_export		\
 								ft_pwd		\
 								get_cmd		\
-								redirect
+								redirect \
+								handle_builtins \
+								exec \
+								ft_exit
 
 SRCS				=			$(addsuffix .c, $(MAIN_SRCS))
 

@@ -110,6 +110,8 @@ t_token	*tokenize_bis(int *i, char *str)
 		if (!new_token)
 			return (NULL);
 	}
+	while (str[(*i)] && ft_isspace(str[(*i)]))
+		(*i)++;
 	return (new_token);
 }
 

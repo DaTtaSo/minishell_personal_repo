@@ -6,7 +6,7 @@
 /*   By: alarroye <alarroye@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/03 16:44:30 by alarroye          #+#    #+#             */
-/*   Updated: 2025/05/09 15:22:06 by alarroye         ###   ########lyon.fr   */
+/*   Updated: 2025/07/20 03:54:51 by alarroye         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,12 +18,12 @@ int	ft_pwd(void)
 
 	if (getcwd(pwd, PATH_MAX))
 	{
-		printf("%s\n", pwd);
+		ft_printf("%s\n", pwd);
 		return (0);
 	}
 	else
 	{
 		perror("pwd");
-		return (1);
+		return (errno);
 	}
 }

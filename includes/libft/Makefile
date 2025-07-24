@@ -45,7 +45,10 @@ SRC		=			ft_atoi.c \
 					ft_tolower.c \
 					ft_toupper.c \
 					ft_strcmp.c \
-					ft_strndup.c
+					ft_tools1.c \
+					ft_tools2.c \
+					ft_printf.c \
+					ft_strndup.c \
 
 SRC_BONUS	=		ft_lstadd_back_bonus.c \
 					ft_lstadd_front_bonus.c \
@@ -55,7 +58,7 @@ SRC_BONUS	=		ft_lstadd_back_bonus.c \
 					ft_lstlast_bonus.c \
 					ft_lstmap_bonus.c \
 					ft_lstnew_bonus.c \
-					ft_lstsize_bonus.c
+					ft_lstsize_bonus.c 
 
 
 OBJ		=			$(SRC:%.c=$(OBJ_DIR)%.o)

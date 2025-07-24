@@ -6,7 +6,7 @@
 /*   By: alarroye <alarroye@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 21:39:06 by alarroye          #+#    #+#             */
-/*   Updated: 2025/07/19 21:55:32 by alarroye         ###   ########lyon.fr   */
+/*   Updated: 2025/07/24 00:31:46 by alarroye         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,38 +54,52 @@ char	*search_path(char *cmd, char **path, int *error)
 		free(path_tmp);
 		if (!path_cmd)
 			return (NULL);
-		if (ft_is_exec(path_cmd, error))
+		if (ft_is_exec(path_cmd, error) && (*error != 126))
 			return (path_cmd);
 		free(path_cmd);
+		if (*error == 126)
+			return (NULL);
 	}
 	return (NULL);
 }
 
-char	*ft_path(char *cmd, t_list *env, int *error)
+int	ft_status_path(char *cmd, int *error, char *path)
+{
+	if (*error == 127)
+		return (ft_error_msg(cmd, "command not found"));
+	else if (*error == 126)
+	{
+		if (path && *path)
+			free(path);
+		return (ft_error_msg(cmd, "Permission denied"));
+	}
+	return (0);
+}
+
+char	*ft_path(t_cmd *cmd, t_list *env, int *error)
 {
 	char	**lst_path;
 	char	*path;
+	char	*cmd_tab;
 
 	path = NULL;
-	if (cmd && !is_builtins(cmd))
+	cmd_tab = cmd->cmd_param[0];
+	if (cmd_tab && !is_builtins(cmd))
 	{
-		if (!(ft_strchr(cmd, '/') && ft_is_exec(cmd, error)))
+		if (ft_strchr(cmd_tab, '/') && ft_is_exec(cmd_tab, error))
+		{
+			path = ft_strdup(cmd_tab);
+		}
+		else
 		{
 			lst_path = parse_path(env);
 			if (!lst_path || !*lst_path)
 				ft_error("malloc failed parse_path", lst_path, NULL, 1);
-			path = search_path(cmd, lst_path, error);
+			path = search_path(cmd_tab, lst_path, error);
 			ft_free_dtab(lst_path);
 		}
-		else
-			path = ft_strdup(cmd);
-		if (*error == 127)
-			ft_error_msg(cmd, "command not found");
-		else if (*error == 126)
-		{
-			ft_error_msg(cmd, "Permission denied");
-			free(path);
-		}
+		if (ft_status_path(cmd_tab, error, path))
+			return (NULL);
 	}
 	return (path);
 }

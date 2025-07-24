@@ -6,7 +6,7 @@
 /*   By: alarroye <alarroye@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/16 13:48:52 by alarroye          #+#    #+#             */
-/*   Updated: 2025/04/14 11:51:03 by alarroye         ###   ########lyon.fr   */
+/*   Updated: 2025/07/24 06:23:23 by alarroye         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,19 @@
 //#define APPEND		3	//>>
 //#define PIPE			4	//|
 //#define WORD			5	//cmd
+
+// typedef struct s_list
+//{
+//	char			*content;
+//	char			*name;
+//	struct s_list	*next;
+//}					t_list;
+
+typedef struct s_lst
+{
+	char			*content;
+	struct s_lst	*next;
+}					t_lst;
 
 typedef struct s_file
 {
@@ -81,6 +94,8 @@ typedef struct s_data
 	pid_t			pid;
 }					t_data;
 
+extern int			g_signal_received;
+
 /////////////*parsing*/////////////
 
 // tokenize
@@ -122,56 +137,70 @@ int					cmd_list_bis(t_token **current_token, t_cmd **head,
 						t_cmd **current);
 t_cmd				*create_new_cmd(t_token *token);
 // builder_utils
-void				handle_redirection(t_file **files, t_token **token);
 void				cmd_count(t_token *token, int *nb_pipe);
 int					get_cmd_size(t_token *token);
 int					is_redirection(int type);
 t_file				*file_add_back(t_file **lst);
 void				copy_filename(t_file *current, t_token **token);
-void	copy_eof(t_file *current, t_token **token);
+// builder_utils_2
+void				handle_redirection(t_file **files, t_token **token);
+void				copy_eof(t_file *current, t_token **token);
 
 /////////////*exec*/////////////
 
 // main
+void				sigint_handler(int sig);
+void				sigquit_handler(int sig);
 void				init_data(t_data *data, int ac, char **av);
 int					check_synthax(t_data *data);
-t_list				*make_env(void);
 t_list				*parse_env(char **envp);
+void				ft_heredoc(t_file *tmp);
+
+// exec
 int					ft_exec(t_data *data, pid_t pid);
-int					handle_redir(t_cmd *cmd);
-int					ft_child_builtins(t_cmd *cmd, t_data *data);
-int					is_builtins(char *cmd);
-int					ft_wait(t_cmd *head, pid_t pid, int *error);
-int					builtins(char **cmd, t_list **env);
+void				handle_children(pid_t *pid, t_cmd *cmd, t_data *data,
+						char *path_cmd);
+int					ft_child(t_cmd *cmd, char *path_cmd, t_data *data);
 int					ft_failed_execve(t_data *data, char **cmd, char **env,
 						char *path_cmd);
+int					ft_wait(t_data *data, pid_t pid);
+
+// handle_builtins
+int					ft_child_builtins(t_cmd *cmd, t_data *data);
+int					is_builtins(t_cmd *cmd);
+int					builtins(t_cmd *cmd, t_data *data);
 
 // get_cmd
 char				**parse_path(t_list *env);
 char				*search_path(char *cmd, char **path, int *error);
-char				*ft_path(char *cmd, t_list *env, int *error);
+char				*ft_path(t_cmd *cmd, t_list *env, int *error);
 
 // redirect
+int					handle_redir(t_data *data, t_cmd *cmd);
 int					redirect_outfile(char *file);
 int					redirect_outfile_append(char *file);
 int					redirect_infile(char *file);
+int					redirect_heredoc(char *file);
 
 /////////////*builtins*/////////////
 
-// builtins_env
+// env + unset
 int					ft_env(t_list *env);
 int					ft_unset(t_list **env, char **a);
 int					check_params_env(char *a);
-
 // export
 int					ft_export(t_list **env, char **a);
 // ft_pwd
 int					ft_pwd(void);
 // ft_cd
 int					ft_cd(t_list **env, char **cmd);
+// ft_exit
+int					ft_exit(t_data *data, t_cmd *cmd);
 
 /////////////*other*/////////////
 // utils
+int					er_msg_free_tok(char *arg, char *msg, t_token **token);
+int					ft_perror_msg(char *msg, int error);
 int					ft_error_msg(char *arg, char *msg);
 int					ft_error(char *msg, char **path, char **dtab, int status);
 int					ft_is_exec(char *path_cmd, int *error);
@@ -181,7 +210,7 @@ t_list				*ft_last_node(t_list *lst);
 char				**lst_in_tab(t_list *env);
 int					ft_cmdlen(t_cmd *cmd);
 void				ft_close_save(t_data *data);
-int					er_msg_free_tok(char *arg, char *msg, t_token **token);
+void				ft_free_and_exit(t_data data, char *path_cmd);
 
 // ft_free
 void				ft_free_all_lst(t_list *lst);
@@ -196,6 +225,7 @@ void				ft_free_lst(t_list *lst);
 
 // ft_print
 void				print(t_cmd *cmd);
+void				print_list(t_list *lst);
 void				print_tokens(t_token *head);
 
 #endif
