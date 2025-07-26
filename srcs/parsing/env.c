@@ -12,6 +12,118 @@
 
 #include "minishell.h"
 
+char	*expand_env_var(t_data *data, char *str)
+{
+	int		quotes;
+	char	*res;
+
+	res = ft_strdup("");
+	if (!res)
+		return (NULL);
+	quotes = 0;
+	expand_env_var_bis(data, &quotes, str, &res);
+	if (check_unclosed_quotes(quotes) && res)
+	{
+		free(res);
+		return (NULL);
+	}
+	return (res);
+}
+
+void	expand_env_var_bis(t_data *data, int *quotes, char *str, char **res)
+{
+	int	i;
+
+	i = 0;
+	while (str[i])
+	{
+		if (handle_quote(&i, quotes, str))
+			continue ;
+		if (!str[i])
+			break ;
+		if (str[i] == '$' && str[i + 1] == '?' && *quotes != 1)
+			manage_exit_status(&data, &i, str, res);
+		else if (str[i] == '$' && *quotes != 1)
+			expend_env_var_third(&i, str, data->env, res);
+		else
+			*res = join_and_free((*res), char_to_str(str[i++]));
+	}
+}
+
+void	expend_env_var_third(int *i, char *str, t_list *env_cpy, char **res)
+{
+	char	*name;
+	char	*value;
+	char	*tmp;
+	int		start;
+
+	(*i)++;
+	start = (*i);
+	tmp = NULL;
+	while (str[(*i)] && (ft_isalnum(str[(*i)]) || str[(*i)] == '_'))
+		(*i)++;
+	name = ft_substr(str, start, (*i) - start);
+	if (!name || name[0] == '\0')
+	{
+		tmp = ft_strdup("$");
+		if (tmp)
+			*res = join_and_free(*res, tmp);
+		free(name);
+		return ;
+	}
+	value = get_env_value(env_cpy, name);
+	if (value)
+	{
+		tmp = ft_strdup(value);
+		if (tmp)
+			*res = join_and_free(*res, tmp);
+	}
+	free (name);
+}
+
+//void expend_env_var_third(int *i, char *str, t_list *env_cpy, char **res)
+//{
+//	char *name;
+//	char *value;
+//	char *tmp;
+//	char *new_res;
+//	int start;
+//
+//	(*i)++;
+//	start = *i;
+//	while (str[*i] && (ft_isalnum(str[*i]) || str[*i] == '_'))
+//		(*i)++;
+//	name = ft_substr(str, start, *i - start);
+//	if (!name || name[0] == '\0')
+//	{
+//		tmp = ft_strdup("$");
+//		if (tmp)
+//		{
+//			new_res = join_and_free(*res, tmp);
+//			if (new_res)
+//				*res = new_res;
+//			else
+//				free(tmp);
+//		}
+//		free(name);
+//		return ;
+//	}
+//	value = get_env_value(env_cpy, name);
+//	if (value)
+//	{
+//		tmp = ft_strdup(value);
+//		if (tmp)
+//		{
+//			new_res = join_and_free(*res, tmp);
+//			if (!new_res)
+//				free(tmp);
+//			else
+//				*res = new_res;
+//		}
+//	}
+//	free(name);
+//}
+
 t_list	*cpy_env(char **env)
 {
 	int		i;
@@ -57,65 +169,4 @@ t_list	*create_env_node(char *env_var, t_list **env_cpy)
 		return (NULL);
 	}
 	return (ft_lstnew(name, content));
-}
-
-void	expand_env_var_bis(t_data *data, int quotes, char *str, char **res)
-{
-	int	i;
-
-	i = 0;
-	while (str[i])
-	{
-		if (handle_quote(&i, &quotes, str))
-			return ;
-		if (!str[i])
-			break ;
-		if (str[i] == '$' && str[i + 1] == '?' && quotes != 1)
-			manage_exit_status(&data, &i, str, res);
-		else if (str[i] == '$' && quotes != 1)
-			expend_env_var_bis(&i, str, data->env, res);
-		else
-			*res = join_and_free((*res), char_to_str(str[i++]));
-	}
-}
-
-char	*expand_env_var(t_data *data, char *str)
-{
-	int		quotes;
-	char	*res;
-
-	res = ft_strdup("");
-	if (!res)
-		return (NULL);
-	quotes = 0;
-	expand_env_var_bis(data, quotes, str, &res);
-	if (check_unclosed_quotes(quotes))
-	{
-		free(res);
-		return (NULL);
-	}
-	return (res);
-}
-
-void	expend_env_var_bis(int *i, char *str, t_list *env_cpy, char **res)
-{
-	char	*name;
-	char	*value;
-	int		start;
-
-	(*i)++;
-	start = (*i);
-	while (str[(*i)] && (ft_isalnum(str[(*i)]) || str[(*i)] == '_'))
-		(*i)++;
-	name = ft_substr(str, start, (*i) - start);
-	if (!name || name[0] == '\0')
-	{
-		free(name);
-		*res = join_and_free(*res, ft_strdup("$"));
-		return ;
-	}
-	value = get_env_value(env_cpy, name);
-	if (value)
-		*res = join_and_free(*res, ft_strdup(value));
-	free (name);
 }
