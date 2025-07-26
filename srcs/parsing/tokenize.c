@@ -83,8 +83,6 @@ t_token	*create_token(char *str, t_token_type type)
 	}
 	new_token->type = type;
 	new_token->next = NULL;
-//	new_token->quotes = 0;
-//	new_token->is_expended = 0;
 	return (new_token);
 }
 

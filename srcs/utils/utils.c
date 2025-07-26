@@ -159,7 +159,7 @@ char	**lst_in_tab(t_list *env)
 	char	**tab_env;
 	char	*tmp;
 
-	tab_env = malloc(sizeof(char *) * (ft_lstlen(env) + 1));
+	tab_env = calloc(sizeof(char *), (ft_lstlen(env) + 1));
 	if (!tab_env)
 		return (NULL);
 	i = -1;

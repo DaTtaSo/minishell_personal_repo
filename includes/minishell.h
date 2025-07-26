@@ -126,9 +126,20 @@ char				*remove_quotes(const char *src);
 char				*get_env_value(t_list *env, char *name);
 int					check_unclosed_quotes(int quotes);
 // env_utils_2
+void				expand_tokens(t_data *data);
+t_token				*handle_retokenization(t_data *data, t_token *current,
+								char *cleaned, t_token *next);
+t_token				*advance_after_replacement(t_token *new_tokens);
+t_token	*handle_simple_expansion(t_token *current, char *cleaned,
+									t_token *next);
+t_token	*process_word_token(t_data *data, t_token *current, t_token *next);
+// env_utils_3
 void				manage_exit_status(t_data **data, int *i, char *str,
 						char **res);
-void				expand_tokens(t_data *data);
+int					needs_retokenization(char *str);
+void				replace_token_with_list(t_token **token_list, t_token *to_replace, t_token *new_tokens);
+int					token_contains_quotes(char *str);
+char				*remove_outer_quotes(char *str);
 
 // command_builder
 t_data				cmd_builder(t_data *data);

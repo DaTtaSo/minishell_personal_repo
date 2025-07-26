@@ -42,15 +42,16 @@ MAIN_SRCS			=			main 			\
 								env 			\
 								env_utils		\
 								env_utils_2		\
+								env_utils_3		\
 								command_builder	\
 								builder_utils	\
 								builder_utils_2	\
 								builtins_env	\
 								ft_cd			\
 								ft_export		\
-								ft_pwd		\
-								get_cmd		\
-								redirect \
+								ft_pwd			\
+								get_cmd			\
+								redirect		\
 								handle_builtins \
 								exec			\
 								ft_exit			\
