@@ -43,6 +43,7 @@ MAIN_SRCS			=			main 			\
 								env_utils		\
 								env_utils_2		\
 								env_utils_3		\
+								env_utils_4		\
 								command_builder	\
 								builder_utils	\
 								builder_utils_2	\

@@ -69,7 +69,6 @@ int	ft_cd(t_list **env, char **cmd, t_data *data)
 	char	buf[PATH_MAX];
 	int		error_update;
 
-	// utiliser chdir meme en cas d'erreur de getcwd
 	error_update = 0;
 	if (cmd && !cmd[1])
 		return (fd_cd_not_arg(env, buf, error_update, data));

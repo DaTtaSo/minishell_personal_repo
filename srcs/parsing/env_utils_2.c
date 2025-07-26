@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   env_utils.c                                        :+:      :+:    :+:   */
+/*   env_utils_2.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: nbedouan <nbedouan@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/07/16 22:57:35 by nbedouan          #+#    #+#             */
-/*   Updated: 2025/07/16 23:33:03 by nbedouan         ###   ########.fr       */
+/*   Created: 2025/07/26 04:52:07 by nbedouan          #+#    #+#             */
+/*   Updated: 2025/07/26 05:22:26 by nbedouan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,9 @@
 
 t_token	*advance_after_replacement(t_token *new_tokens)
 {
-	t_token *current = new_tokens;
+	t_token	*current;
 
+	current = new_tokens;
 	while (current && current->next)
 		current = current->next;
 	if (current)
@@ -26,9 +27,9 @@ t_token	*advance_after_replacement(t_token *new_tokens)
 }
 
 t_token	*handle_retokenization(t_data *data, t_token *current,
-									  char *cleaned, t_token *next)
+									char *cleaned, t_token *next)
 {
-	t_token *new_tokens;
+	t_token	*new_tokens;
 
 	new_tokens = tokenize(data, cleaned);
 	free(cleaned);
@@ -55,8 +56,8 @@ t_token	*handle_simple_expansion(t_token *current, char *cleaned,
 
 t_token	*process_word_token(t_data *data, t_token *current, t_token *next)
 {
-	char *expanded;
-	char *cleaned;
+	char	*expanded;
+	char	*cleaned;
 
 	if (token_contains_quotes(current->str) && current->str[0])
 		return (next);
@@ -73,10 +74,10 @@ t_token	*process_word_token(t_data *data, t_token *current, t_token *next)
 		return (handle_simple_expansion(current, cleaned, next));
 }
 
-void expand_tokens(t_data *data)
+void	expand_tokens(t_data *data)
 {
-	t_token *current;
-	t_token *next;
+	t_token	*current;
+	t_token	*next;
 
 	current = data->token;
 	while (current)

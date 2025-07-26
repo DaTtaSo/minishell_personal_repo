@@ -119,7 +119,6 @@ int	ft_wait(t_data *data, pid_t pid)
 	status = 0;
 	while (len_cmd--)
 	{
-		//traiter chaque pid independament
 		w_pid = waitpid(-1, &status, 0);
 		if (WIFSIGNALED(status))
 			err = (128 + WTERMSIG(status));

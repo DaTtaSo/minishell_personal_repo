@@ -59,59 +59,42 @@ t_list	*create_env_node(char *env_var, t_list **env_cpy)
 	return (ft_lstnew(name, content));
 }
 
+void	expand_env_var_bis(t_data *data, int quotes, char *str, char **res)
+{
+	int	i;
+
+	i = 0;
+	while (str[i])
+	{
+		if (handle_quote(&i, &quotes, str))
+			return ;
+		if (!str[i])
+			break ;
+		if (str[i] == '$' && str[i + 1] == '?' && quotes != 1)
+			manage_exit_status(&data, &i, str, res);
+		else if (str[i] == '$' && quotes != 1)
+			expend_env_var_bis(&i, str, data->env, res);
+		else
+			*res = join_and_free((*res), char_to_str(str[i++]));
+	}
+}
+
 char	*expand_env_var(t_data *data, char *str)
 {
-	int		i;
 	int		quotes;
 	char	*res;
 
 	res = ft_strdup("");
 	if (!res)
 		return (NULL);
-	i = 0;
 	quotes = 0;
-	while (str[i])
-	{
-		if (handle_quote(&i, &quotes, str))
-			continue ;
-		if (!str[i])
-			break ;
-		if (str[i] == '$' && str[i + 1] == '?' && quotes != 1)
-			manage_exit_status(&data, &i, str, &res);
-		else if (str[i] == '$' && quotes != 1)
-			expend_env_var_bis(&i, str, data->env, &res);
-		else
-			res = join_and_free(res, char_to_str(str[i++]));
-	}
+	expand_env_var_bis(data, quotes, str, &res);
 	if (check_unclosed_quotes(quotes))
 	{
 		free(res);
 		return (NULL);
 	}
 	return (res);
-}
-
-int	handle_quote(int *i, int *quotes, char *str)
-{
-	if (str[(*i)] == '\'' && (*quotes) != 2)
-	{
-		if ((*quotes) == 1)
-			(*quotes) = 0;
-		else
-			(*quotes) = 1;
-		(*i)++;
-		return (1);
-	}
-	else if (str[(*i)] == '\"' && (*quotes) != 1)
-	{
-		if ((*quotes) == 2)
-			(*quotes) = 0;
-		else
-			(*quotes) = 2;
-		(*i)++;
-		return (1);
-	}
-	return (0);
 }
 
 void	expend_env_var_bis(int *i, char *str, t_list *env_cpy, char **res)
