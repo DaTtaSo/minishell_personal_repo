@@ -102,7 +102,6 @@ int	ft_failed_execve(t_data *data, char **cmd, char **env, char *path_cmd)
 	ft_free_dtab(env);
 	perror("failed execve");
 	exit(errno);
-	return (0);
 }
 
 int	ft_wait(t_data *data, pid_t pid)
@@ -117,6 +116,7 @@ int	ft_wait(t_data *data, pid_t pid)
 		return (data->exit_status);
 	err = 0;
 	w_pid = 0;
+	status = 0;
 	while (len_cmd--)
 	{
 		//traiter chaque pid independament

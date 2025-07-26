@@ -91,13 +91,11 @@ int	ft_change_var(t_list **env, char *a)
 {
 	int		pos;
 	t_list	*tmp;
-	int		len;
 
 	tmp = *env;
 	if (!ft_strchr(a, '='))
 		return (0);
 	pos = exist(env, a);
-	len = ft_strlen(a) - ft_strlen(ft_strchr(a, '='));
 	while (pos--)
 		tmp = tmp->next;
 	free(tmp->content);

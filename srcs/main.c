@@ -241,11 +241,6 @@ int	main(int ac, char **av, char **env)
 	pid = 0;
 	data.env = cpy_env(env);
 	rl_event_hook = do_nothing;
-	if (!data.env)
-	{
-		perror("Error: Failed to copy environment\n");
-		return (1);
-	}
 	data.stdin_save = dup(STDIN_FILENO);
 	data.stdout_save = dup(STDOUT_FILENO);
 	if (data.stdin_save == -1 || data.stdout_save == -1)
@@ -257,12 +252,11 @@ int	main(int ac, char **av, char **env)
 	{
 		dup2(data.stdin_save, STDIN_FILENO);
 		dup2(data.stdout_save, STDOUT_FILENO);
-		//printf("ici\n");
 		read = readline("minishell> ");
 		if (g_exit_status)
 			data.exit_status = 130;
 		g_exit_status = 0;
-		if (!read || !ft_strcmp(read, "exit"))
+		if (!read)
 		{
 			ft_close_save(&data);
 			break ;
@@ -283,7 +277,7 @@ int	main(int ac, char **av, char **env)
 		}
 		expand_tokens(&data);
 		data = cmd_builder(&data);
-//		 print_tokens(data.token);
+		 print_tokens(data.token);
 //		 print(data.cmd);
 		handle_heredoc(&data);
 		signal(SIGINT, SIG_IGN);

@@ -79,6 +79,8 @@ typedef struct s_token
 	char			*str;
 	t_token_type	type;
 	struct s_token	*next;
+//	int				quotes;
+//	int				is_expended;
 }					t_token;
 
 typedef struct s_data

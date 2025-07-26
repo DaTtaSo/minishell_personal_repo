@@ -155,28 +155,29 @@ char	**ft_free_and_null(char **tab)
 
 char	**lst_in_tab(t_list *env)
 {
-	int		len_env;
+	int		i;
 	char	**tab_env;
 	char	*tmp;
-	int		i;
 
-	len_env = ft_lstlen(env);
-	tab_env = malloc(sizeof(char *) * (len_env + 1));
-	i = -1;
+	tab_env = malloc(sizeof(char *) * (ft_lstlen(env) + 1));
 	if (!tab_env)
 		return (NULL);
+	i = -1;
 	while (env)
 	{
-		tmp = ft_strjoin(env->name, "=");
-		if (!tmp)
-			return (ft_free_and_null(tab_env));
-		tab_env[++i] = ft_strjoin(tmp, env->content);
-		free(tmp);
-		if (!tab_env[i])
-			return (ft_free_and_null(tab_env));
+		if (env->content)
+		{
+			tmp = ft_strjoin(env->name, "=");
+			if (!tmp)
+				return (ft_free_and_null(tab_env));
+			tab_env[++i] = ft_strjoin(tmp, env->content);
+			free(tmp);
+			if (!tab_env[i])
+				return (ft_free_and_null(tab_env));
+		}
 		env = env->next;
 	}
-	tab_env[len_env] = NULL;
+	tab_env[i] = NULL;
 	return (tab_env);
 }
 
