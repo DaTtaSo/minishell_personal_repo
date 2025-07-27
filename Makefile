@@ -50,13 +50,15 @@ MAIN_SRCS			=			main 			\
 								builtins_env	\
 								ft_cd			\
 								ft_export		\
+								export_utils	\
 								ft_pwd			\
 								get_cmd			\
 								redirect		\
 								handle_builtins \
 								exec			\
 								ft_exit			\
-								ft_echo
+								ft_echo			\
+								signal_utils
 
 SRCS				=			$(addsuffix .c, $(MAIN_SRCS))
 

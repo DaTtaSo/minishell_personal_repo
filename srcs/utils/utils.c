@@ -147,9 +147,11 @@ void	ft_free_and_exit(t_data data, char *path_cmd)
 	exit(status);
 }
 
-char	**ft_free_and_null(char **tab)
+char	**ft_free_and_null(char **tab, char *tmp)
 {
 	ft_free_dtab(tab);
+	if (tmp)
+		free(tmp);
 	return (NULL);
 }
 
@@ -162,18 +164,19 @@ char	**lst_in_tab(t_list *env)
 	tab_env = calloc(sizeof(char *), (ft_lstlen(env) + 1));
 	if (!tab_env)
 		return (NULL);
-	i = -1;
+	i = 0;
 	while (env)
 	{
 		if (env->content)
 		{
 			tmp = ft_strjoin(env->name, "=");
 			if (!tmp)
-				return (ft_free_and_null(tab_env));
-			tab_env[++i] = ft_strjoin(tmp, env->content);
-			free(tmp);
+				return (ft_free_and_null(tab_env, tmp));
+			tab_env[i] = ft_strjoin(tmp, env->content);
 			if (!tab_env[i])
-				return (ft_free_and_null(tab_env));
+				return (ft_free_and_null(tab_env, tmp));
+			free(tmp);
+			i++;
 		}
 		env = env->next;
 	}

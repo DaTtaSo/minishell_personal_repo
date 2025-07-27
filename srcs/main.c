@@ -12,25 +12,6 @@
 
 #include "minishell.h"
 
-volatile sig_atomic_t	g_exit_status = 0;
-
-void	sigint_handler(int sig)
-{
-	(void)sig;
-	//write(1, "\n", 1);
-	rl_replace_line("", 0);
-	rl_done = 1;
-//	rl_on_new_line();
-//	rl_redisplay();
-	g_exit_status = 130;
-}
-
-void set_signals_prompt(void)
-{
-	signal(SIGINT, sigint_handler);
-	signal(SIGQUIT, SIG_IGN);
-}
-
 void	init_data(t_data *data, int ac, char **av)
 {
 	(void)ac;
@@ -173,13 +154,9 @@ void	handle_heredoc(t_data *data)
 		tmp_file = tmp->file;
 		while (tmp_file)
 		{
-			// printf("tmpfilename=%s\n", tmp_file->filename);
-			// printf("tmpfileeof=%s\n", tmp_file->eof);
 			if (tmp_file->type == HEREDOC)
 				ft_heredoc(tmp_file);
 			tmp_file = tmp_file->next;
-			// printf("cmd=%s\n", data->cmd->file->filename);
-			// printf("cmdfileeof=%s\n", data->cmd->file->eof);
 		}
 		tmp = tmp->next;
 	}
@@ -196,7 +173,6 @@ void	ft_heredoc(t_file *tmp)
 		return ;
 	while (!g_exit_status)
 	{
-		// pk  pa da un chid pour gestions des signaux
 		read = readline("> ");
 		if (!read)
 		{
@@ -224,11 +200,6 @@ void	ft_heredoc(t_file *tmp)
 		}
 	}
 	close(fd);
-}
-
-int do_nothing(void)
-{
-	return (0);
 }
 
 int	main(int ac, char **av, char **env)

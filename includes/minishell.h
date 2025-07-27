@@ -94,7 +94,7 @@ typedef struct s_data
 	pid_t			pid;
 }					t_data;
 
-extern int			g_signal_received;
+extern int	g_exit_status;
 
 /////////////*parsing*/////////////
 
@@ -199,11 +199,12 @@ int					check_params_env(char *a);
 // export
 int					ft_export(t_list **env, char **a, t_data *data);
 void				ft_export_bis(t_list *tmp, t_data *data, char **a, int *i);
-char				*expand_value(t_data *data, char *str);
 t_list				*sort_list(t_list *env);
 int					export_not_args(t_list **env);
-int					exist(t_list **env, char *a);
 int					ft_change_var(t_list **env, char *a, t_data *data);
+// export_utils
+char				*expand_value(t_data *data, char *str);
+int					exist(t_list **env, char *a);
 t_list				*create_env_node_from_parts(char *name, char *content);
 
 // ft_pwd
@@ -252,5 +253,6 @@ void				print_tokens(t_token *head);
 //signaux
 void				sigint_handler(int sig);
 void				set_signals_prompt(void);
+int					do_nothing(void);
 
 #endif
