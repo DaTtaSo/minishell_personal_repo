@@ -65,11 +65,7 @@ t_token	*process_word_token(t_data *data, t_token *current, t_token *next)
 	if (!expanded)
 		return (next);
 	if (current->q_type != 1)
-	{
-//		cleaned = remove_outer_quotes(expanded);
-//		free(expanded);
 		return (handle_simple_expansion(current, expanded, next));
-	}
 	cleaned = remove_outer_quotes(expanded);
 	free(expanded);
 	if (needs_retokenization(cleaned))

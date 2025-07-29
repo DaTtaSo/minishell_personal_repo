@@ -53,7 +53,6 @@ char	*extract_word(char *str, int *i, t_quote_type *q_type)
 		}
 		(*i)++;
 	}
-//	printf("%d\n", *q_type);
 	res = ft_substr(str, start, *i - start);
 	return (res);
 }

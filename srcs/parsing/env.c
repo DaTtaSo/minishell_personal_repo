@@ -65,7 +65,9 @@ extern void	expend_env_var_third(int *i, char *str, t_list *env_cpy, char **res)
 	name = ft_substr(str, start, (*i) - start);
 	if (!name || name[0] == '\0')
 	{
-		*res = join_and_free(*res, tmp);
+		tmp = ft_strdup("$");
+		if (tmp)
+			*res = join_and_free(*res, tmp);
 		return (free(name));
 	}
 	value = get_env_value(env_cpy, name);
@@ -75,7 +77,6 @@ extern void	expend_env_var_third(int *i, char *str, t_list *env_cpy, char **res)
 		if (tmp)
 			*res = join_and_free(*res, tmp);
 	}
-	printf("%d\n", 1);
 	return (free(name));
 }
 
