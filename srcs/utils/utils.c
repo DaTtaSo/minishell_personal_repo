@@ -6,71 +6,26 @@
 /*   By: alarroye <alarroye@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 21:39:09 by alarroye          #+#    #+#             */
-/*   Updated: 2025/07/24 03:40:55 by alarroye         ###   ########lyon.fr   */
+/*   Updated: 2025/07/27 22:27:17 by alarroye         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	ft_close_save(t_data *data)
+int	ft_str_isdigit(char *arg)
 {
-	if (data->stdin_save != -1)
-		close(data->stdin_save);
-	if (data->stdout_save != -1)
-		close(data->stdout_save);
-}
+	char	*str;
 
-int	ft_perror_msg(char *msg, int error)
-{
-	write(2, "minishell: ", 11);
-	perror(msg);
-	return (error);
-}
-
-int	ft_error_msg(char *arg, char *msg)
-{
-	ft_putstr_fd("minishell: ", 2);
-	if (arg)
+	str = arg;
+	if (*str == '-' || *str == '+')
+		str++;
+	while (*str)
 	{
-		ft_putstr_fd(arg, 2);
-		ft_putstr_fd(": ", 2);
+		if (!ft_isdigit(*str))
+			return (0);
+		str++;
 	}
-	ft_putstr_fd(msg, 2);
-	ft_putstr_fd("\n", 2);
 	return (1);
-}
-
-int	ft_error(char *msg, char **path, char **dtab, int status)
-{
-	if (dtab && dtab[0])
-		ft_error_msg(dtab[0], msg);
-	else
-		ft_error_msg(" ", msg);
-	ft_free_dtab(path);
-	ft_free_dtab(dtab);
-	if (status != -1)
-		exit(status);
-	return (1);
-}
-
-int	ft_is_exec(char *path_cmd, int *error)
-{
-	if (access(path_cmd, F_OK) == 0)
-	{
-		if (access(path_cmd, X_OK) == 0)
-		{
-			*error = 0;
-			return (1);
-		}
-		else
-		{
-			*error = 126;
-			return (1);
-		}
-	}
-	else
-		*error = 127;
-	return (0);
 }
 
 t_list	*new_node(char *str)
@@ -115,19 +70,6 @@ int	ft_cmdlen(t_cmd *cmd)
 	return (i);
 }
 
-int	ft_lstlen(t_list *lst)
-{
-	size_t	i;
-
-	i = 0;
-	while (lst)
-	{
-		i++;
-		lst = lst->next;
-	}
-	return (i);
-}
-
 t_list	*ft_last_node(t_list *lst)
 {
 	if (lst)
@@ -138,75 +80,48 @@ t_list	*ft_last_node(t_list *lst)
 	return (lst);
 }
 
-void	ft_free_and_exit(t_data data, char *path_cmd)
+int	er_msg_free_tok(char *arg, char *msg, t_token **token)
 {
-	int	status;
-
-	status = data.exit_status;
-	free_all(&data, path_cmd);
-	exit(status);
-}
-
-char	**ft_free_and_null(char **tab, char *tmp)
-{
-	ft_free_dtab(tab);
-	if (tmp)
-		free(tmp);
-	return (NULL);
-}
-
-char	**lst_in_tab(t_list *env)
-{
-	int		i;
-	char	**tab_env;
 	char	*tmp;
+	int		res;
 
-	tab_env = calloc(sizeof(char *), (ft_lstlen(env) + 1));
-	if (!tab_env)
-		return (NULL);
-	i = 0;
-	while (env)
+	tmp = NULL;
+	if (arg)
+		tmp = ft_strdup(arg);
+	if (token)
 	{
-		if (env->content)
-		{
-			tmp = ft_strjoin(env->name, "=");
-			if (!tmp)
-				return (ft_free_and_null(tab_env, tmp));
-			tab_env[i] = ft_strjoin(tmp, env->content);
-			if (!tab_env[i])
-				return (ft_free_and_null(tab_env, tmp));
-			free(tmp);
-			i++;
-		}
-		env = env->next;
+		free_tokens(token);
+		token = NULL;
 	}
-	tab_env[i] = NULL;
-	return (tab_env);
+	res = ft_error_msg(tmp, msg);
+	if (tmp && *tmp)
+		free(tmp);
+	return (res);
 }
 
-// t_list	*cpy_env(char **env)
-//{
-//	int		i;
-//	int		j;
-//	char	*name;
-//	char	*content;
-//	t_list	*env_cpy;
+int	check_synthax(t_data *data)
+{
+	t_token	*token;
 
-//	env_cpy = NULL;
-//	i = 0;
-//	j = 0;
-//	while (env[i])
-//	{
-//		j = 0;
-//		while (env[i][j] && env[i][j] != '=')
-//			j++;
-//		name = ft_substr(env[i], 0, j);
-//		if (env[i][j] == '=')
-//			content = ft_strdup(&env[i][j + 1]);
-//		else
-//			content = NULL;
-//		ft_lstadd_back(&env_cpy, ft_lstnew(name, content));
-//		i++;
-//	}
-//	return (env_cpy);
-//}
+	token = data->token;
+	if (!(token->str))
+		return (er_msg_free_tok(NULL, "command not found", &data->token));
+	if (token->type == PIPE)
+		return (er_msg_free_tok(token->str,
+				"syntax error near unexpected token", &data->token));
+	while (token)
+	{
+		if ((!token->str || token->str[0] == '\0'))
+			return (er_msg_free_tok(token->str, "command not found",
+					&data->token));
+		if (token->type == PIPE && (!token->next || token->next->type == PIPE))
+			return (er_msg_free_tok(token->str,
+					"syntax error near unexpected token", &data->token));
+		else if (!(token->type == PIPE || token->type == WORD) && (!token->next
+				|| token->next->type != WORD))
+			return (er_msg_free_tok(token->str,
+					"syntax error near unexpected token", &data->token));
+		token = token->next;
+	}
+	return (0);
+}

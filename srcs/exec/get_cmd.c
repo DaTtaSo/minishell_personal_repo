@@ -6,7 +6,7 @@
 /*   By: alarroye <alarroye@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 21:39:06 by alarroye          #+#    #+#             */
-/*   Updated: 2025/07/24 00:31:46 by alarroye         ###   ########lyon.fr   */
+/*   Updated: 2025/07/28 12:12:01 by alarroye         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,13 +65,16 @@ char	*search_path(char *cmd, char **path, int *error)
 
 int	ft_status_path(char *cmd, int *error, char *path)
 {
-	if (*error == 127)
-		return (ft_error_msg(cmd, "command not found"));
-	else if (*error == 126)
+	if (*error == 126)
 	{
 		if (path && *path)
 			free(path);
 		return (ft_error_msg(cmd, "Permission denied"));
+	}
+	else if (*error == 127 || !path)
+	{
+		*error = 127;
+		return (ft_error_msg(cmd, "command not found"));
 	}
 	return (0);
 }
@@ -86,20 +89,42 @@ char	*ft_path(t_cmd *cmd, t_list *env, int *error)
 	cmd_tab = cmd->cmd_param[0];
 	if (cmd_tab && !is_builtins(cmd))
 	{
-		if (ft_strchr(cmd_tab, '/') && ft_is_exec(cmd_tab, error))
-		{
-			path = ft_strdup(cmd_tab);
-		}
+		if (ft_strchr(cmd_tab, '/'))
+			path = ft_absolute_path(cmd_tab, error);
 		else
 		{
 			lst_path = parse_path(env);
-			if (!lst_path || !*lst_path)
-				ft_error("malloc failed parse_path", lst_path, NULL, 1);
 			path = search_path(cmd_tab, lst_path, error);
 			ft_free_dtab(lst_path);
+			if (ft_status_path(cmd_tab, error, path))
+				return (NULL);
 		}
-		if (ft_status_path(cmd_tab, error, path))
-			return (NULL);
 	}
 	return (path);
+}
+
+char	*ft_absolute_path(char *cmd, int *error)
+{
+	DIR	*directory;
+
+	if (ft_is_exec(cmd, error))
+	{
+		if (*error == 0)
+		{
+			directory = opendir(cmd);
+			if (directory)
+			{
+				ft_error_msg(cmd, "Is a directory");
+				closedir(directory);
+				*error = 126;
+			}
+			else
+				return (ft_strdup(cmd));
+		}
+		if (*error == 126)
+			ft_error_msg(cmd, "Permission denied");
+	}
+	else
+		ft_error_msg(cmd, "command not found");
+	return (NULL);
 }

@@ -75,53 +75,11 @@ extern void	expend_env_var_third(int *i, char *str, t_list *env_cpy, char **res)
 		if (tmp)
 			*res = join_and_free(*res, tmp);
 	}
+	printf("%d\n", 1);
 	return (free(name));
 }
 
-//void expend_env_var_third(int *i, char *str, t_list *env_cpy, char **res)
-//{
-//	char *name;
-//	char *value;
-//	char *tmp;
-//	char *new_res;
-//	int start;
-//
-//	(*i)++;
-//	start = *i;
-//	while (str[*i] && (ft_isalnum(str[*i]) || str[*i] == '_'))
-//		(*i)++;
-//	name = ft_substr(str, start, *i - start);
-//	if (!name || name[0] == '\0')
-//	{
-//		tmp = ft_strdup("$");
-//		if (tmp)
-//		{
-//			new_res = join_and_free(*res, tmp);
-//			if (new_res)
-//				*res = new_res;
-//			else
-//				free(tmp);
-//		}
-//		free(name);
-//		return ;
-//	}
-//	value = get_env_value(env_cpy, name);
-//	if (value)
-//	{
-//		tmp = ft_strdup(value);
-//		if (tmp)
-//		{
-//			new_res = join_and_free(*res, tmp);
-//			if (!new_res)
-//				free(tmp);
-//			else
-//				*res = new_res;
-//		}
-//	}
-//	free(name);
-//}
-
-t_list	*cpy_env(char **env)
+t_list	*cpy_env(char **env, t_data *data)
 {
 	int		i;
 	t_list	*env_cpy;
@@ -129,13 +87,21 @@ t_list	*cpy_env(char **env)
 
 	env_cpy = NULL;
 	i = 0;
-	while (env[i])
+	while (env && env[i])
 	{
-		new_node = create_env_node(env[i], &env_cpy);
+		if (env[i])
+			new_node = create_env_node(env[i], &env_cpy);
 		if (!new_node)
 			return (NULL);
 		ft_lstadd_back(&env_cpy, new_node);
 		i++;
+	}
+	if (!env_cpy)
+		env_cpy = ft_lstnew(ft_strdup("OLDPWD"), NULL);
+	if (ft_make_env(&env_cpy, data))
+	{
+		ft_free_all_lst(env_cpy);
+		return (NULL);
 	}
 	return (env_cpy);
 }

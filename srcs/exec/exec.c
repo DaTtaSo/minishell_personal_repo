@@ -6,7 +6,7 @@
 /*   By: alarroye <alarroye@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/20 03:24:14 by alarroye          #+#    #+#             */
-/*   Updated: 2025/07/24 13:57:27 by alarroye         ###   ########lyon.fr   */
+/*   Updated: 2025/07/28 12:24:58 by alarroye         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,7 +85,7 @@ int	ft_child(t_cmd *cmd, char *path_cmd, t_data *data)
 		dup2(data->fd[1], STDOUT_FILENO);
 		close(data->fd[1]);
 	}
-	if (handle_redir(data, cmd))
+	if (handle_redir(data, cmd) || !path_cmd)
 		ft_free_and_exit(*data, path_cmd);
 	if (!cmd->cmd_param[0])
 		ft_free_and_exit(*data, path_cmd);
@@ -102,6 +102,7 @@ int	ft_failed_execve(t_data *data, char **cmd, char **env, char *path_cmd)
 	ft_free_dtab(env);
 	perror("failed execve");
 	exit(errno);
+	return (0);
 }
 
 int	ft_wait(t_data *data, pid_t pid)
@@ -120,10 +121,12 @@ int	ft_wait(t_data *data, pid_t pid)
 	while (len_cmd--)
 	{
 		w_pid = waitpid(-1, &status, 0);
-		if (WIFSIGNALED(status))
-			err = (128 + WTERMSIG(status));
-		else if (w_pid == pid && WIFEXITED(status))
+		if (w_pid == pid && WIFEXITED(status))
 			err = WEXITSTATUS(status);
+		else if (w_pid == pid && WIFSIGNALED(status))
+			err = (128 + WTERMSIG(status));
 	}
+	if (err == 131 && data->stdout_save != -1)
+		write(data->stdout_save, "Quit (core dumped)", 18);
 	return (err);
 }

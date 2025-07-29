@@ -58,7 +58,10 @@ MAIN_SRCS			=			main 			\
 								exec			\
 								ft_exit			\
 								ft_echo			\
-								signal_utils
+								signal_utils	\
+								utils_msg_and_exit	\
+								heredoc			\
+								utils_exec
 
 SRCS				=			$(addsuffix .c, $(MAIN_SRCS))
 
