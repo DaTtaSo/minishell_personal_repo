@@ -35,6 +35,7 @@ void	expand_env_var_bis(t_data *data, int *quotes, char *str, char **res)
 	int	i;
 
 	i = 0;
+//	printf("%s\n", str);
 	while (str[i])
 	{
 		if (handle_quote(&i, quotes, str))

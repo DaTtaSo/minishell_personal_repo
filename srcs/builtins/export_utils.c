@@ -14,14 +14,9 @@
 
 char	*expand_value(t_data *data, char *str)
 {
-	char	*no_quotes;
 	char	*expanded;
 
-	no_quotes = remove_outer_quotes(str);
-	if (!no_quotes)
-		return (NULL);
-	expanded = expand_env_var(data, no_quotes);
-	free(no_quotes);
+	expanded = expand_env_var(data, str);
 	if (!expanded)
 		return (NULL);
 	return (expanded);

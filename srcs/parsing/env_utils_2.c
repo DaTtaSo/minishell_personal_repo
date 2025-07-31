@@ -57,21 +57,18 @@ t_token	*handle_simple_expansion(t_token *current, char *cleaned,
 t_token	*process_word_token(t_data *data, t_token *current, t_token *next)
 {
 	char	*expanded;
-	char	*cleaned;
 
 	if (current->q_type == 1)
 		return (next);
 	expanded = expand_env_var(data, current->str);
 	if (!expanded)
 		return (next);
-	if (current->q_type != 1)
+	else if (current->q_type == 2)
 		return (handle_simple_expansion(current, expanded, next));
-	cleaned = remove_outer_quotes(expanded);
-	free(expanded);
-	if (needs_retokenization(cleaned))
-		return (handle_retokenization(data, current, cleaned, next));
+	if (needs_retokenization(expanded, &current->q_type) && (token_contains_quotes(expanded) || data->exported))
+		return (handle_retokenization(data, current, expanded, next));
 	else
-		return (handle_simple_expansion(current, cleaned, next));
+		return (handle_simple_expansion(current, expanded, next));
 }
 
 void	expand_tokens(t_data *data)

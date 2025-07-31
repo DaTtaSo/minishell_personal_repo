@@ -103,13 +103,12 @@ char	*ft_loop(t_data *data, pid_t pid, char *read)
 void	update_data(t_data *data, pid_t pid)
 {
 	int	is_heredoc;
-	
-//	if (data->token->q_type != 1)
+
 //	print_tokens(data->token);
 	expand_tokens(data);
 //	print_tokens(data->token);
 	*data = cmd_builder(data);
-	// print(data->cmd);
+//	 print(data->cmd);
 	is_heredoc = handle_heredoc(data);
 	signal(SIGINT, SIG_IGN);
 	data->exit_status = ft_exec(data, pid);

@@ -100,6 +100,7 @@ typedef struct s_data
 	int				prev_fd;
 	int				exit_status;
 	pid_t			pid;
+	int				exported;
 }					t_data;
 
 extern int			g_exit_status;
@@ -127,6 +128,7 @@ void				expand_env_var_bis(t_data *data, int *quotes, char *str,
 						char **res);
 void				expend_env_var_third(int *i, char *str, t_list *env_cpy,
 						char **res);
+char	*expand_env_var_void(t_data *data, char *str);
 // env_utils
 char				*char_to_str(char c);
 char				*join_and_free(char *s1, char *s2);
@@ -144,13 +146,14 @@ t_token				*process_word_token(t_data *data, t_token *current,
 // env_utils_3
 void				manage_exit_status(t_data **data, int *i, char *str,
 						char **res);
-int					needs_retokenization(char *str);
+int					needs_retokenization(char *str, t_quote_type *q_type);
 void				replace_token_with_list(t_token **token_list,
 						t_token *to_replace, t_token *new_tokens);
 int					token_contains_quotes(char *str);
 char				*remove_outer_quotes(char *str);
 // env_utils_4
 int					handle_quote(int *i, int *quotes, char *str);
+void	handle_quote_void(int *i, int *quotes, char *str);
 int					exported(t_list **env_cpy, char *arg, t_data *data);
 int					ft_make_env(t_list **env_cpy, t_data *data);
 int					update_shlvl(t_list **env_cpy, t_list *tmp_env,

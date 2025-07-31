@@ -22,7 +22,7 @@ void	manage_exit_status(t_data **data, int *i, char *str, char **res)
 	(*i) += 2;
 }
 
-int	needs_retokenization(char *str)
+int	needs_retokenization(char *str, t_quote_type *q_type)
 {
 	int	i;
 	int	quotes;
@@ -31,22 +31,23 @@ int	needs_retokenization(char *str)
 	quotes = 0;
 	while (str[i])
 	{
-		if (str[i] == '\'' && quotes != 2)
+		if (str[i] == '\'' && *q_type != 2)
 		{
 			if (quotes == 1)
 				quotes = 0;
 			else
 				quotes = 1;
 		}
-		else if (str[i] == '\"' && quotes != 1)
+		else if (str[i] == '\"' && *q_type != 1)
 		{
 			if (quotes == 2)
 				quotes = 0;
 			else
 				quotes = 2;
 		}
-		else if (!quotes && (is_operator(str[i]) || ft_isspace(str[i++])))
+		else if (!quotes && (is_operator(str[i]) || ft_isspace(str[i])))
 			return (1);
+		i++;
 	}
 	return (0);
 }
