@@ -42,11 +42,20 @@ int	ft_exec(t_data *data, pid_t pid)
 
 void	handle_children(pid_t *pid, t_cmd *cmd, t_data *data, char *path_cmd)
 {
-	if (*pid == 0)
-	{
+	t_cmd *tmp;
+	tmp = cmd;
+	int i = 0;
+	if (*pid == 0) {
 		signal(SIGINT, SIG_DFL);
 		signal(SIGQUIT, SIG_DFL);
 		ft_close_save(data);
+		dprintf(2,"filenefafrf=%p\n",tmp->file);
+		while (!tmp->file && tmp->cmd_param && tmp->cmd_param[i] && !*(tmp->cmd_param[i]))
+		{
+			i++;
+		}
+		if (!tmp->cmd_param || !tmp->cmd_param[i])
+			ft_free_and_exit(*data, path_cmd);
 		path_cmd = ft_path(cmd, data->env, &data->exit_status);
 		if (cmd->cmd_param[0] && is_builtins(cmd))
 		{

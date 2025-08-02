@@ -100,7 +100,6 @@ typedef struct s_data
 	int				prev_fd;
 	int				exit_status;
 	pid_t			pid;
-	int				exported;
 }					t_data;
 
 extern int			g_exit_status;
@@ -122,12 +121,12 @@ int					er_msg_free_tok(char *arg, char *msg, t_token **token);
 
 // env
 t_list				*cpy_env(char **env, t_data *data);
-char				*expand_env_var(t_data *data, char *str);
 t_list				*create_env_node(char *env_var, t_list **env_cpy);
-void				expand_env_var_bis(t_data *data, int *quotes, char *str,
-						char **res);
-void				expend_env_var_third(int *i, char *str, t_list *env_cpy,
-						char **res);
+//char				*expand_env_var(t_data *data, char *str);
+//void				expand_env_var_bis(t_data *data, int *quotes, char *str,
+//						char **res);
+//void				expend_env_var_third(int *i, char *str, t_list *env_cpy,
+//						char **res);
 char	*expand_env_var_void(t_data *data, char *str);
 // env_utils
 char				*char_to_str(char c);
@@ -138,7 +137,6 @@ int					check_unclosed_quotes(int quotes);
 void				expand_tokens(t_data *data);
 t_token				*handle_retokenization(t_data *data, t_token *current,
 						char *cleaned, t_token *next);
-t_token				*advance_after_replacement(t_token *new_tokens);
 t_token				*handle_simple_expansion(t_token *current, char *cleaned,
 						t_token *next);
 t_token				*process_word_token(t_data *data, t_token *current,
@@ -146,14 +144,13 @@ t_token				*process_word_token(t_data *data, t_token *current,
 // env_utils_3
 void				manage_exit_status(t_data **data, int *i, char *str,
 						char **res);
-int					needs_retokenization(char *str, t_quote_type *q_type);
-void				replace_token_with_list(t_token **token_list,
-						t_token *to_replace, t_token *new_tokens);
+void				replace_current_token_with_list(t_data *data,
+							t_token **current, t_token *new_tokens);
 int					token_contains_quotes(char *str);
 char				*remove_outer_quotes(char *str);
+t_token	*find_prev_token(t_token *head, t_token *token);
 // env_utils_4
 int					handle_quote(int *i, int *quotes, char *str);
-void	handle_quote_void(int *i, int *quotes, char *str);
 int					exported(t_list **env_cpy, char *arg, t_data *data);
 int					ft_make_env(t_list **env_cpy, t_data *data);
 int					update_shlvl(t_list **env_cpy, t_list *tmp_env,
@@ -207,13 +204,14 @@ char				**parse_path(t_list *env);
 char				*search_path(char *cmd, char **path, int *error);
 char				*ft_path(t_cmd *cmd, t_list *env, int *error);
 char				*ft_absolute_path(char *cmd, int *error);
+int	ft_status_path(char *cmd, int *error, char *path);
 
 // redirect
 int					handle_redir(t_data *data, t_cmd *cmd);
 int					redirect_outfile(char *file);
 int					redirect_outfile_append(char *file);
 int					redirect_infile(char *file);
-int					redirect_heredoc(char *file);
+int	ft_loop_redir(t_data *data, t_file *tmp);
 // heredoc
 int					handle_heredoc(t_data *data);
 int					ft_heredoc(t_file *tmp, int fd);
@@ -272,6 +270,7 @@ void				free_all(t_data *data, char *read);
 void				free_iteration_data(t_data *data);
 void				free_cmd(t_cmd **cmd);
 void				ft_free_lst(t_list *lst);
+void				free_token(t_token **head);
 
 // ft_print
 void				print(t_cmd *cmd);
@@ -283,5 +282,10 @@ void				ft_print_tab(char **tab);
 void				sigint_handler(int sig);
 void				set_signals_prompt(void);
 int					do_nothing(void);
+
+void expand_env_var_bis(t_data *data, int *quotes, char *str, char **res, t_token **current, int *retokenized);
+extern void expend_env_var_third(int *i, char *str, t_list *env_cpy, t_data *data,
+								 char **res, t_token **current, int *quotes, int *retokenized);
+char *expand_env_var(t_data *data, char *str, t_token **current);
 
 #endif

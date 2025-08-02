@@ -29,10 +29,7 @@ int	ft_export(t_list **env, char **a, t_data *data)
 		else if (exist(env, a[i]) != -1 && ft_change_var(env, a[i], data))
 			return (ft_error_msg(NULL, "malloc failed"));
 		else if (exist(env, a[i]) == -1)
-		{
 			ft_export_bis(tmp, data, a, &i);
-			data->exported = 1;
-		}
 		tmp = *env;
 	}
 	return (data->exit_status);

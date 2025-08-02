@@ -115,6 +115,7 @@ void	free_all(t_data *data, char *read)
 		free_env(data->env);
 		data->env = NULL;
 	}
+	ft_close_save(data);
 	if (read)
 	{
 		free(read);

@@ -15,8 +15,10 @@
 char	*expand_value(t_data *data, char *str)
 {
 	char	*expanded;
+	t_token *current;
 
-	expanded = expand_env_var(data, str);
+	current = data->token;
+	expanded = expand_env_var(data, str, &current);
 	if (!expanded)
 		return (NULL);
 	return (expanded);
