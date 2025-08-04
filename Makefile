@@ -32,13 +32,16 @@ VPATH				=			srcs:srcs/exec		\
 VPATH				=			srcs:srcs/utils		\
 VPATH				=			srcs:srcs/builtins	\
 
-MAIN_SRCS			=			main 			\
-								utils 			\
+MAIN_SRCS			=			main			\
+								utils			\
+								utils_2			\
 								free_utils		\
 								free_utils_2	\
+								free_utils_3	\
 								temporary_utils	\
 								tokenize 		\
 								token_utils		\
+								token_utils_2	\
 								env 			\
 								env_utils		\
 								env_utils_2		\

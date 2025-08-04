@@ -85,8 +85,6 @@ int	check_synthax(t_data *data)
 	t_token	*token;
 
 	token = data->token;
-	if (!(token->str))
-		return (er_msg_free_tok(NULL, "command not found", &data->token));
 	if (token->type == PIPE)
 		return (er_msg_free_tok(token->str,
 				"syntax error near unexpected token", &data->token));
@@ -105,36 +103,4 @@ int	check_synthax(t_data *data)
 		token = token->next;
 	}
 	return (0);
-}
-
-int	ft_lstlen(t_list *lst)
-{
-	size_t	i;
-
-	i = 0;
-	while (lst)
-	{
-		i++;
-		lst = lst->next;
-	}
-	return (i);
-}
-
-int	er_msg_free_tok(char *arg, char *msg, t_token **token)
-{
-	char *tmp;
-	int res;
-
-	tmp = NULL;
-	if (arg)
-		tmp = ft_strdup(arg);
-	if (token)
-	{
-		free_tokens(token);
-		token = NULL;
-	}
-	res = ft_error_msg(tmp, msg);
-	if (tmp && *tmp)
-		free(tmp);
-	return (res);
 }

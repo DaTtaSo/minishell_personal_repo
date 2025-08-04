@@ -36,13 +36,6 @@
 //#define PIPE			4	//|
 //#define WORD			5	//cmd
 
-// typedef struct s_list
-//{
-//	char			*content;
-//	char			*name;
-//	struct s_list	*next;
-//}					t_list;
-
 typedef struct s_lst
 {
 	char			*content;
@@ -84,6 +77,8 @@ typedef enum e_quotes_type
 typedef struct s_token
 {
 	char			*str;
+	int				retokenized;
+	int				quotes;
 	t_token_type	type;
 	t_quote_type	q_type;
 	struct s_token	*next;
@@ -94,6 +89,7 @@ typedef struct s_data
 	t_list			*env;
 	t_cmd			*cmd;
 	t_token			*token;
+	t_token			**current_token;
 	int				stdout_save;
 	int				stdin_save;
 	int				fd[2];
@@ -113,36 +109,37 @@ t_token				*create_token(char *str, t_token_type type,
 						t_quote_type *q_type);
 char				*extract_word(char *str, int *i, t_quote_type *q_type);
 t_token				*tokenize_bis(int *i, char *str, t_quote_type *q_type);
-// tokenize_utils
+// token_utils
 char				*get_operator_str(t_token_type type);
 int					ft_isspace(char c);
 int					is_operator(char c);
 int					trickster(int *i);
-int					er_msg_free_tok(char *arg, char *msg, t_token **token);
+int					needs_space_splitting(char *value);
+// token_utils_2
+void				handle_double_quote(int *quotes, t_quote_type *q_type);
+void				handle_single_quote(int *quotes, t_quote_type *q_type);
+void				handle_simple_expansion(char *value, char **res);
+void				handle_empty_var(char **res);
 
 // env
-
+char				*expand_env_var(t_data *data, char *str, t_token **current);
+void				expand_env_var_bis(t_data *data, char *str,
+									char **res, t_token **current);
+void				expend_env_var_third(int *i, char *str, t_data *data, char **res);
 t_list				*cpy_env(char **env, t_data *data);
-t_list				*create_env_node(char *env_var, t_list **env_cpy);
-// char				*expand_env_var(t_data *data, char *str);
-// void				expand_env_var_bis(t_data *data, int *quotes, char *str,
-//						char **res);
-// void				expend_env_var_third(int *i, char *str, t_list *env_cpy,
-//						char **res);
-char				*expand_env_var_void(t_data *data, char *str);
+void				handle_retokenization(t_data *data, char *value, t_token **current,
+							char **res);
 // env_utils
+t_list				*create_env_node(char *env_var, t_list **env_cpy);
 char				*char_to_str(char c);
 char				*join_and_free(char *s1, char *s2);
 char				*get_env_value(t_list *env, char *name);
-int					check_unclosed_quotes(int quotes);
+int					check_unclosed_quotes(t_quote_type q_type);
 // env_utils_2
 void				expand_tokens(t_data *data);
-t_token				*handle_retokenization(t_data *data, t_token *current,
-						char *cleaned, t_token *next);
-t_token				*handle_simple_expansion(t_token *current, char *cleaned,
-						t_token *next);
 t_token				*process_word_token(t_data *data, t_token *current,
 						t_token *next);
+int					check_token(t_token **current);
 // env_utils_3
 void				manage_exit_status(t_data **data, int *i, char *str,
 						char **res);
@@ -182,10 +179,8 @@ void				copy_eof(t_file *current, t_token **token);
 char				*ft_loop(t_data *data, pid_t pid, char *read);
 void				update_data(t_data *data, pid_t pid);
 void				sigint_handler(int sig);
-void				sigquit_handler(int sig);
 void				init_data(t_data *data, int ac, char **av);
 int					check_synthax(t_data *data);
-t_list				*parse_env(char **envp);
 char				*ft_loop(t_data *data, pid_t pid, char *read);
 
 // exec
@@ -229,12 +224,13 @@ int					ft_unset(t_list **env, char **a);
 int					check_params_env(char *a);
 // export
 int					ft_export(t_list **env, char **a, t_data *data);
-int					export_not_args(t_list **env);
 void				ft_export_bis(t_list *tmp, t_data *data, char **a, int *i);
+int					ft_change_var(t_list **env, char *a, t_data *data);
+int					export_not_args(t_list **env);
+// export_utils
 int					exist(t_list **env, char *a);
 char				*expand_value(t_data *data, char *str);
 t_list				*create_env_node_from_parts(char *name, char *content);
-int					ft_change_var(t_list **env, char *a, t_data *data);
 
 // ft_pwd
 int					ft_pwd(void);
@@ -276,7 +272,8 @@ void				free_all(t_data *data, char *read);
 void				free_iteration_data(t_data *data);
 void				free_cmd(t_cmd **cmd);
 void				ft_free_lst(t_list *lst);
-
+void				*free_return(char *s1, char *s2);
+char				**ft_free_and_null(char **tab);
 // ft_print
 void				print(t_cmd *cmd);
 void				print_list(t_list *lst);
@@ -287,12 +284,5 @@ void				ft_print_tab(char **tab);
 void				sigint_handler(int sig);
 void				set_signals_prompt(void);
 int					do_nothing(void);
-
-void				expand_env_var_bis(t_data *data, int *quotes, char *str,
-						char **res, t_token **current, int *retokenized);
-extern void			expend_env_var_third(int *i, char *str, t_list *env_cpy,
-						t_data *data, char **res, t_token **current,
-						int *quotes, int *retokenized);
-char				*expand_env_var(t_data *data, char *str, t_token **current);
 
 #endif

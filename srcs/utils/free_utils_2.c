@@ -63,7 +63,8 @@ void	free_iteration_data(t_data *data)
 		data->cmd = NULL;
 	}
 }
-void close_and_free_all(t_data *data)
+
+void	close_and_free_all(t_data *data)
 {
 	if (data->fd[0] != -1)
 		close(data->fd[0]);
