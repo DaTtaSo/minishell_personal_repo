@@ -1,0 +1,1 @@
+minishell: STDOUT_FILENO: not tty
