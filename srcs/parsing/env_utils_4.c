@@ -14,7 +14,7 @@
 
 int	handle_quote(int *i, int *quotes, char *str, t_quote_type q_type)
 {
-	if (str[(*i)] == '\'' && (*quotes) != 2 && q_type != DOUBLE_QUOTES)
+	if (str[(*i)] == '\'' && (*quotes) != 2)
 	{
 		if ((*quotes) == 1)
 			(*quotes) = 0;
@@ -22,7 +22,7 @@ int	handle_quote(int *i, int *quotes, char *str, t_quote_type q_type)
 			(*quotes) = 1;
 		return (1);
 	}
-	else if (str[(*i)] == '\"' && (*quotes) != 1 && q_type != SINGLE_QUOTES)
+	else if (str[(*i)] == '\"' && (*quotes) != 1)
 	{
 		if ((*quotes) == 2)
 			(*quotes) = 0;

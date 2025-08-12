@@ -113,6 +113,22 @@ int	check_token(t_token **current)
 	return (0);
 }
 
+static int	check_only_q(t_token **current)
+{
+	int	i;
+
+	i = 0;
+	if (!current || !(*current) || !(*current)->str)
+		return (0);
+	while ((*current)->str[i])
+	{
+		if ((*current)->str[i] != '"' && (*current)->str[i] != '\'')
+			return (0);
+		i++;
+	}
+	return (1);
+}
+
 void	expand_tokens(t_data *data)
 {
 	t_token	*current;
@@ -132,7 +148,7 @@ void	expand_tokens(t_data *data)
 	while (current)
 	{
 		next = current->next;
-		if (current->q_type != NO_QUOTES && current->str && !current->retokenized)
+		if (current->q_type != NO_QUOTES && current->str && !check_only_q(&current) && !current->retokenized)
 		{
 			clean = remove_outer_quotes(current->str, current->q_type);
 			free(current->str);

@@ -135,7 +135,7 @@ void				expand_env_var_bis(t_data *data, char *str, char **res,
 void				expend_env_var_third(int *i, char *str, t_data *data,
 						char **res);
 t_list				*cpy_env(char **env, t_data *data);
-void				handle_retokenization(t_data *data, char *value,
+void				handle_retoken(t_data *data, char *value,
 						t_token **current, char **res);
 // env_utils
 t_list				*create_env_node(char *env_var, t_list **env_cpy);

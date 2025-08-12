@@ -120,7 +120,7 @@ void	expend_env_var_third(int *i, char *str, t_data *data, char **res)
 	if (!value)
 		return ;
 	if ((*current)->q_type == NO_QUOTES && needs_space_splitting(value))
-		handle_retokenization(data, value, current, res);
+		handle_retoken(data, value, current, res);
 	else
 		*res = join_and_free(*res, ft_strdup(value));
 }
@@ -135,10 +135,12 @@ static char	*extract_word_retokenize(char *str, int *i, t_quote_type *q_type)
 	quotes = 0;
 	while (str[*i] && (!ft_isspace(str[*i]) || quotes))
 	{
-		if (str[*i] == '\'' && quotes != 2)
+		if (str[*i] == '\'' && quotes != 2 && *q_type != DOUBLE_QUOTES)
 			handle_single_quote(&quotes, q_type);
-		else if (str[*i] == '\"' && quotes != 1)
+		else if (str[*i] == '\"' && quotes != 1 && *q_type != SINGLE_QUOTES)
 			handle_double_quote(&quotes, q_type);
+		// if (handle_quote(i, &quotes, str, *q_type))
+		// 	continue ;
 		(*i)++;
 	}
 	res = ft_substr(str, start, *i - start);
