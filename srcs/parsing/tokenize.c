@@ -42,6 +42,9 @@ static void	handle_double_quote_tok(int *quotes, t_quote_type *q_type, char *str
 		if ((*q_type) == NO_QUOTES)
 			(*q_type) = DOUBLE_QUOTES;
 	}
+	else if ((*quotes) == 1)
+	{
+	}
 }
 
 static void	handle_single_quote_tok(int *quotes, t_quote_type *q_type, char *str)
@@ -57,6 +60,9 @@ static void	handle_single_quote_tok(int *quotes, t_quote_type *q_type, char *str
 		(*quotes) = 1;
 		if ((*q_type) == NO_QUOTES)
 			(*q_type) = SINGLE_QUOTES;
+	}
+	else if ((*quotes) == 2)
+	{
 	}
 }
 

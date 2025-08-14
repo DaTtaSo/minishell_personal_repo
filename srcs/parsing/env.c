@@ -78,11 +78,9 @@ void	expand_env_var_bis(t_data *data, char *str, char **res,
 		}
 		if (!str[i])
 			break ;
-		if (str[i] == '$' && str[i + 1] == '?' && quotes != 1
-			&& (*current)->q_type != SINGLE_QUOTES)
+		if (str[i] == '$' && str[i + 1] == '?' && quotes != 1)
 			manage_exit_status(&data, &i, str, res);
-		else if (str[i] == '$' && quotes != 1
-			&& (*current)->q_type != SINGLE_QUOTES)
+		else if (str[i] == '$' && quotes != 1)
 		{
 			data->current_token = current;
 			expend_env_var_third(&i, str, data, res);
