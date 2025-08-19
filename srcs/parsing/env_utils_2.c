@@ -150,7 +150,7 @@ void	expand_tokens(t_data *data)
 		next = current->next;
 		if (current->q_type != NO_QUOTES && current->str && !check_only_q(&current) && !current->retokenized)
 		{
-			clean = remove_outer_quotes(current->str, current->q_type);
+			clean = remove_outer_quotes_cmd(current->str, current->q_type);
 			free(current->str);
 			current->str = clean;
 			current->q_type = NO_QUOTES;
