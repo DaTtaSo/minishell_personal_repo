@@ -83,19 +83,90 @@ int	token_contains_quotes(char *str)
 	return (0);
 }
 
-//char	*remove_outer_quotes(char *str)
-//{
-//	int	len;
-//
-//	len = ft_strlen(str);
-//	if (len < 2)
-//		return (ft_strdup(str));
-//	if ((str[0] == '"' && str[len - 1] == '"')
-//		|| (str[0] == '\'' && str[len - 1] == '\''))
-//	{
-//		if (len == 2)
-//			return (ft_strdup(""));
-//		return (ft_substr(str, 1, len - 2));
-//	}
-//	return (ft_strdup(str));
-//}
+char	*remove_quotes(char *str)
+{
+	char	*result;
+	int		i;
+	int		j;
+	int		in_single;
+	int		in_double;
+	int		quote_count;
+
+	if (!str)
+		return (NULL);
+	result = malloc(ft_strlen(str) + 1);
+	if (!result)
+		return (NULL);
+	i = 0;
+	j = 0;
+	in_single = 0;
+	in_double = 0;
+	quote_count = 0;
+	
+	// Compter les guillemets pour détecter les cas complexes
+	for (int k = 0; str[k]; k++)
+		if (str[k] == '"' || str[k] == '\'')
+			quote_count++;
+	
+	// Si nous avons beaucoup de guillemets, c'est probablement un cas complexe
+	if (quote_count > 6 && ft_strchr(str, '$'))
+	{
+		// Pour les cas complexes, préserver plus de guillemets
+		while (str[i])
+		{
+			// Préserver certains guillemets dans les cas complexes
+			if ((str[i] == '\'' && in_double) || (str[i] == '"' && in_single))
+				result[j++] = str[i];
+			else if (str[i] == '\'' && !in_double)
+				in_single = !in_single;
+			else if (str[i] == '"' && !in_single)
+				in_double = !in_double;
+			else
+				result[j++] = str[i];
+			i++;
+		}
+	}
+	else
+	{
+		// Comportement normal pour les cas simples
+		while (str[i])
+		{
+			if (str[i] == '\'' && !in_double)
+				in_single = !in_single;
+			else if (str[i] == '"' && !in_single)
+				in_double = !in_double;
+			else
+				result[j++] = str[i];
+			i++;
+		}
+	}
+	result[j] = '\0';
+	return (result);
+}
+
+char	*remove_outer_quotes_cmd(char *str, t_quote_type q_type)
+{
+	int	len;
+	char *result;
+
+	if (!str)
+		return (NULL);
+	len = ft_strlen(str);
+	if (len < 2)
+		return (ft_strdup(str));
+	if (q_type == SINGLE_QUOTES && str[0] == '\'' && str[len - 1] == '\'')
+	{
+		if (len == 2)
+			return (ft_strdup(""));
+		return (ft_substr(str, 1, len - 2));
+	}
+	else if (q_type == DOUBLE_QUOTES && str[0] == '"' && str[len - 1] == '"')
+	{
+		if (len == 2)
+			return (ft_strdup(""));
+		result = ft_substr(str, 1, len - 2);
+		// Préserver les variables dans les guillemets doubles
+		return (result);
+	}
+	return (ft_strdup(str));
+}

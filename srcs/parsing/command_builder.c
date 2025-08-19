@@ -35,14 +35,28 @@ t_data	cmd_builder(t_data *data)
 
 void	cmd_builder_bis(t_token **token, t_cmd **current_cmd, int *param_index)
 {
+	char	*cleaned_str;
+
 	if (!token || !(*token) || !current_cmd || !(*current_cmd))
 		return ;
 	if ((*token)->type == WORD)
 	{
 		if ((*current_cmd) && (*current_cmd)->cmd_param)
 		{
-			(*current_cmd)->cmd_param[(*param_index)]
-				= ft_strdup((*token)->str);
+			if ((*token)->q_type != NO_QUOTES)
+			{
+				cleaned_str = remove_outer_quotes_cmd((*token)->str, (*token)->q_type);
+				if (cleaned_str)
+					(*current_cmd)->cmd_param[(*param_index)] = cleaned_str;
+				else
+					(*current_cmd)->cmd_param[(*param_index)]
+						= ft_strdup((*token)->str);
+			}
+			else
+			{
+				(*current_cmd)->cmd_param[(*param_index)]
+					= ft_strdup((*token)->str);
+			}
 			(*param_index)++;
 		}
 		(*token) = (*token)->next;
@@ -63,7 +77,7 @@ t_cmd	*cmd_list(t_token *token)
 {
 	t_cmd	*head;
 	t_cmd	*current;
-	// t_token	*current_token;
+
 	int		nb_pipe;
 	int		i;
 
@@ -71,7 +85,6 @@ t_cmd	*cmd_list(t_token *token)
 	nb_pipe = 0;
 	head = NULL;
 	current = NULL;
-	// current_token = token;
 	cmd_count(token, &nb_pipe);
 	while (i <= nb_pipe)
 	{

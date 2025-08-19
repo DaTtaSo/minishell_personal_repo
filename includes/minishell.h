@@ -154,7 +154,9 @@ void				manage_exit_status(t_data **data, int *i, char *str,
 void				replace_current_token_with_list(t_data *data,
 						t_token **current, t_token *new_tokens);
 int					token_contains_quotes(char *str);
+char				*remove_quotes(char *str);
 char				*remove_outer_quotes(char *str, t_quote_type q_type);
+char				*remove_outer_quotes_cmd(char *str, t_quote_type q_type);
 t_token				*find_prev_token(t_token *head, t_token *token);
 // env_utils_4
 int					handle_quote(int *i, int *quotes, char *str, t_quote_type q_type);

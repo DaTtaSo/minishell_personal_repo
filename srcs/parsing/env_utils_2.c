@@ -12,40 +12,40 @@
 
 #include "minishell.h"
 
-char	*remove_outer_quotes(char *str, t_quote_type q_type)
-{
-	size_t	len;
-	char	*res;
-	char	target_quote;
-	int		i;
-	int		j;
+// char	*remove_outer_quotes(char *str, t_quote_type q_type)
+// {
+// 	size_t	len;
+// 	char	*res;
+// 	char	target_quote;
+// 	int		i;
+// 	int		j;
 
-	if (!str)
-		return (NULL);
-	len = ft_strlen(str);
-	if (len < 2)
-		return (ft_strdup(str));
-	if (q_type == DOUBLE_QUOTES)
-		target_quote = '"';
-	else if (q_type == SINGLE_QUOTES)
-		target_quote = '\'';
-	else
-		return (ft_strdup(str));
-	if (str[0] != target_quote || str[len - 1] != target_quote)
-		return (ft_strdup(str));
-	res = malloc(len - 1);
-	if (!res)
-		return (NULL);
-	j = 0;
-	i = 1;
-	if (i < len - 1)
-	{
-		res[j++] = str[i];
-		i++;
-	}
-	res[j] = '\0';
-	return (res);
-}
+// 	if (!str)
+// 		return (NULL);
+// 	len = ft_strlen(str);
+// 	if (len < 2)
+// 		return (ft_strdup(str));
+// 	if (q_type == DOUBLE_QUOTES)
+// 		target_quote = '"';
+// 	else if (q_type == SINGLE_QUOTES)
+// 		target_quote = '\'';
+// 	else
+// 		return (ft_strdup(str));
+// 	if (str[0] != target_quote || str[len - 1] != target_quote)
+// 		return (ft_strdup(str));
+// 	res = malloc(len - 1);
+// 	if (!res)
+// 		return (NULL);
+// 	j = 0;
+// 	i = 1;
+// 	while (i < len - 1)
+// 	{
+// 		res[j++] = str[i];
+// 		i++;
+// 	}
+// 	res[j] = '\0';
+// 	return (res);
+// }
 
 //char *remove_outer_quotes(char *str)
 //{

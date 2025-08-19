@@ -83,7 +83,7 @@ void	is_cmd_null(t_cmd *cmd, t_data *data)
 	i = 0;
 	while (!t->file && t->cmd_param && t->cmd_param[i] && !*(t->cmd_param[i]))
 		i++;
-	if (!t->file && (!t->cmd_param || !t->cmd_param[i]))
+	if (!t->file && (!t->cmd_param || (!t->cmd_param[i] && i == 0)))
 		close_and_free_all(data);
 	if (!i || (t->cmd_param || t->cmd_param[i]))
 		return ;

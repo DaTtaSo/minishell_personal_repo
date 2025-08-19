@@ -73,6 +73,11 @@ char	*ft_path(t_cmd *cmd, t_list *env, int *error)
 	cmd_tab = cmd->cmd_param[0];
 	if (cmd_tab && !is_builtins(cmd))
 	{
+		if (!cmd_tab[0])
+		{
+			*error = 127;
+			return (NULL);
+		}
 		if (ft_strchr(cmd_tab, '/'))
 			path = ft_absolute_path(cmd_tab, error);
 		else

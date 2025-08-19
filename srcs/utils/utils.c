@@ -16,9 +16,13 @@ int	ft_str_isdigit(char *arg)
 {
 	char	*str;
 
+	if (!arg || !*arg)
+		return (0);
 	str = arg;
 	if (*str == '-' || *str == '+')
 		str++;
+	if (!*str)
+		return (0);
 	while (*str)
 	{
 		if (!ft_isdigit(*str))

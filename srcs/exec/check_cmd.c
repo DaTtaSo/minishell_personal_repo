@@ -22,11 +22,10 @@ void	check_cmd(t_data *data, t_cmd *cmd, char *path)
 		data->exit_status = redir_status;
 		ft_free_and_exit(*data, path);
 	}
-	if (!path)
-		check_status(data, cmd->cmd_param[0], path);
 	if (!cmd->cmd_param[0])
 		ft_free_and_exit(*data, path);
-	param_is_quotes(cmd->cmd_param);
+	if (!path)
+		check_status(data, cmd->cmd_param[0], path);
 }
 
 int	is_sigle_builtins(t_data *data, t_cmd *cmd)

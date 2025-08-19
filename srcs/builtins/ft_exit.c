@@ -47,7 +47,8 @@ void	ft_ctrl_d(t_data *data, char *read)
 	int	save_status;
 
 	save_status = data->exit_status;
-	write(data->stdout_save, "exit\n", 5);
+	if (isatty(STDIN_FILENO))
+		write(data->stdout_save, "exit\n", 5);
 	ft_close_save(data);
 	free_all(data, read);
 	exit(save_status);

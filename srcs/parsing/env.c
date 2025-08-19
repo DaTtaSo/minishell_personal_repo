@@ -137,8 +137,6 @@ static char	*extract_word_retokenize(char *str, int *i, t_quote_type *q_type)
 			handle_single_quote(&quotes, q_type);
 		else if (str[*i] == '\"' && quotes != 1 && *q_type != SINGLE_QUOTES)
 			handle_double_quote(&quotes, q_type);
-		// if (handle_quote(i, &quotes, str, *q_type))
-		// 	continue ;
 		(*i)++;
 	}
 	res = ft_substr(str, start, *i - start);
