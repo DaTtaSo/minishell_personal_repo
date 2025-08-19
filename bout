@@ -27,7 +27,7 @@ $USER
 \\nbedouan
 \\$USER
 \\\\$USER
-\\\\\\\\\\\\\\\\$USER $PATH \/home/nbedouan/CLionProjects/minishell/test
+\\\\\\\\\\\\\\\\$USER $PATH \/home/nbedouan/CLionProjects/minishell/19_08
 cat lol.c | cat > lol.c
 cat lol.c '|' cat > lol.c
 $USER nbedouan text  ' text
@@ -64,7 +64,7 @@ test1  test2 test3
  test1 test2  test3 
 test1 test2
 nbedouan/home/nbedouan$
-nbedouan/home/nbedouan/home/nbedouan/CLionProjects/minishell/test
+nbedouan/home/nbedouan/home/nbedouan/CLionProjects/minishell/19_08
 test1test1 test2test1 test2 test3 test1 test2  test3 test1 test2test1 -n
 test1 -n
 test1test1  -nn 

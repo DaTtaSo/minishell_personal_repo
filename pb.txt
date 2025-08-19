@@ -1,26 +1,4 @@
-exit ""
+/bin/echo '' ""
 
-unset PATH
-cd /bin
-ls
-
-unset PATH
-cd /bin/../bin/
-ls
-
-unset PATH
-cd /bin/
-sleep 2
-
-env -i ./minishell
-cd /bin/
-ls
-
->echo>
-/bin/rm -f echo
-
-<echo<
-/bin/rm -f echo
-
->>echo>>
-/bin/rm -f echo
+export T="l"
+$Ts

@@ -27,40 +27,6 @@ char	*expand_env_var(t_data *data, char *str, t_token **current)
 	return (res);
 }
 
-//char	*expand_env_var(t_data *data, char *str, t_token **current)
-//{
-//	char	*res;
-//	char	*tmp;
-//	char	*only_quotes;
-//
-//	only_quotes = NULL;
-//	if (!current || !(*current))
-//		return (ft_strdup(str));
-//	res = ft_strdup("");
-//	tmp = ft_strdup(str);
-//	if (!tmp)
-//		return (free_return(tmp, res));
-//	if (!check_token((current)))
-//		only_quotes = (*current)->str;
-//	expand_env_var_bis(data, tmp, &res, current);
-//	free(tmp);
-//	if (only_quotes && (*current)->type == WORD)
-//	{
-//		free(res);
-//		res = ft_strdup(only_quotes);
-//	}
-//	if (check_unclosed_quotes((*current)->))
-//		return (free_return(res, NULL));
-//	if ((*current)->retokenized)
-//		return (free_return(res, NULL));
-//	if ((*current)->q_type != SINGLE_QUOTES)
-//		tmp = remove_quotes(res);
-//	else
-//		tmp = res;
-//	free(res);
-//	return (tmp);
-//}
-
 void	expand_env_var_bis(t_data *data, char *str, char **res,
 						t_token **current)
 {
@@ -114,6 +80,7 @@ void	expend_env_var_third(int *i, char *str, t_data *data, char **res)
 		return ;
 	}
 	value = get_env_value(data->env, name);
+	(*current)->expanded = 1;
 	free(name);
 	if (!value)
 		return ;

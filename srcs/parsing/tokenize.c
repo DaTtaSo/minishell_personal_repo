@@ -129,6 +129,7 @@ t_token	*create_token(char *str, t_token_type type, t_quote_type *q_type)
 	}
 	new_token->type = type;
 	new_token->retokenized = 0;
+	new_token->expanded = 0;
 	new_token->q_type = *q_type;
 	new_token->next = NULL;
 	return (new_token);

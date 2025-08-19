@@ -61,6 +61,7 @@ typedef struct s_cmd
 {
 	char			**cmd_param;
 	t_file			*file;
+	int				expanded;
 	struct s_cmd	*next;
 }					t_cmd;
 
@@ -85,7 +86,7 @@ typedef struct s_token
 {
 	char			*str;
 	int				retokenized;
-	int				quotes;
+	int				expanded;
 	t_token_type	type;
 	t_quote_type	q_type;
 	struct s_token	*next;

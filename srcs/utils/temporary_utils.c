@@ -43,6 +43,7 @@ void	print(t_cmd *cmd)
 			if (i == 0)
 				printf("  No parameters found\n");
 		}
+		printf("  expended ?: '%d'\n", cmd->expanded);
 		file = cmd->file;
 		while (file)
 		{

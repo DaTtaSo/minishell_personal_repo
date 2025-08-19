@@ -29,7 +29,9 @@ void	replace_current_token_with_list(t_data *data, t_token **current,
 	t_token	*next_token;
 	t_token	*last_new;
 	int		was_retokenized;
+	int		was_expanded;
 
+	was_expanded = (*current)->expanded;
 	was_retokenized = (*current)->retokenized;
 	prev = find_prev_token(data->token, *current);
 	next_token = (*current)->next;
@@ -50,6 +52,7 @@ void	replace_current_token_with_list(t_data *data, t_token **current,
 	if (last_new)
 		last_new->next = next_token;
 	*current = new_tokens;
+	(*current)->expanded = was_expanded;
 	(*current)->retokenized = was_retokenized;
 }
 
@@ -84,36 +87,36 @@ int	token_contains_quotes(char *str)
 }
 
 
-char *remove_quotes(char *str)
+char	*remove_quotes(char *str)
 {
-    char *result;
-    int i, j;
-    int in_single = 0;
-    int in_double = 0;
+	char	*result;
+	int		i, j;
+	int		in_single = 0;
+	int		in_double = 0;
 
-    if (!str)
-        return (NULL);
-    
-    result = malloc(ft_strlen(str) + 1);
-    if (!result)
-        return (NULL);
+	if (!str)
+		return (NULL);
 
-    i = 0;
-    j = 0;
+	result = malloc(ft_strlen(str) + 1);
+	if (!result)
+		return (NULL);
 
-    while (str[i])
-    {
-        if (str[i] == '\'' && !in_double)
-            in_single = !in_single;  // Ne pas copier les délimiteurs
-        else if (str[i] == '"' && !in_single)
-            in_double = !in_double;  // Ne pas copier les délimiteurs  
-        else
-            result[j++] = str[i];    // Copier tout le reste
-        i++;
-    }
-    
-    result[j] = '\0';
-    return (result);
+	i = 0;
+	j = 0;
+
+	while (str[i])
+	{
+		if (str[i] == '\'' && !in_double)
+			in_single = !in_single;
+		else if (str[i] == '"' && !in_single)
+			in_double = !in_double;
+		else
+			result[j++] = str[i];
+		i++;
+	}
+
+	result[j] = '\0';
+	return (result);
 }
 
 // char	*remove_quotes(char *str)
@@ -187,7 +190,6 @@ char *remove_quotes(char *str)
 // {
 // 	int	len;
 // 	char *result;
-
 // 	if (!str)
 // 		return (NULL);
 // 	len = ft_strlen(str);
@@ -261,42 +263,37 @@ char *remove_quotes(char *str)
 
 char *remove_outer_quotes_cmd(char *str, t_quote_type q_type)
 {
-    int len;
-    char *result;
-    int i;
+	int		len;
+	char	*result;
+	int		i;
 
-    if (!str)
-        return (NULL);
-        
-    len = ft_strlen(str);
-    if (len < 2)
-        return (ft_strdup(str));
+	if (!str)
+		return (NULL);
 
-    /* Only remove outer quotes if they match the quote type */
-    if (q_type == SINGLE_QUOTES && str[0] == '\'' && str[len - 1] == '\'')
-    {
-        if (len == 2)
-            return (ft_strdup(""));
-        return (ft_substr(str, 1, len - 2));
-    }
-    else if (q_type == DOUBLE_QUOTES && str[0] == '"' && str[len - 1] == '"')
-    {
-        /* Check if we have escaped quotes inside that would make this ambiguous */
-        for (i = 1; i < len - 1; i++)
-        {
-            if (str[i] == '"' && (i == 1 || str[i-1] != '\\'))
-            {
-                /* We have unescaped double quotes inside - this is likely a complex case
-                   where we shouldn't remove outer quotes */
-                return (ft_strdup(str));
-            }
-        }
-        
-        if (len == 2)
-            return (ft_strdup(""));
-        result = ft_substr(str, 1, len - 2);
-        return (result);
-    }
-    
-    return (ft_strdup(str));
+	len = ft_strlen(str);
+	if (len < 2)
+		return (ft_strdup(str));
+	if (q_type == SINGLE_QUOTES && str[0] == '\'' && str[len - 1] == '\'')
+	{
+		if (len == 2)
+			return (ft_strdup(""));
+		return (ft_substr(str, 1, len - 2));
+	}
+	else if (q_type == DOUBLE_QUOTES && str[0] == '"' && str[len - 1] == '"')
+	{
+		for (i = 1; i < len - 1; i++)
+		{
+			if (str[i] == '"' && (i == 1 || str[i-1] != '\\'))
+			{
+				return (ft_strdup(str));
+			}
+		}
+
+		if (len == 2)
+			return (ft_strdup(""));
+		result = ft_substr(str, 1, len - 2);
+		return (result);
+	}
+
+	return (ft_strdup(str));
 }

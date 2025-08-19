@@ -118,7 +118,7 @@ void	param_is_quotes(char **cmd_param)
 				break ;
 		if (!tmp[i][j])
 		{
-			if (cmd_param && cmd_param && *cmd_param && cmd_param[i])
+			if (cmd_param && *cmd_param && cmd_param[i])
 			{
 				param = cmd_param[i];
 				cmd_param[i] = ft_strdup("");

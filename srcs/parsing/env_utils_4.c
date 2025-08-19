@@ -14,7 +14,6 @@
 
 int	handle_quote(int *i, int *quotes, char *str, t_quote_type q_type)
 {
-	// Amélioration pour gérer les guillemets imbriqués
 	if (str[(*i)] == '\'' && (*quotes) != 2)
 	{
 		if ((*quotes) == 1)
