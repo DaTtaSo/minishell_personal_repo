@@ -124,6 +124,8 @@ int	ft_change_var(t_list **env, char *a, t_data *data)
 	if (!ft_strchr(a, '='))
 		return (0);
 	pos = exist(env, a);
+	if (pos == -1)
+		return (ft_error_msg("", "malloc failed"));
 	while (pos--)
 		tmp = tmp->next;
 	value = ft_strdup(equal_pos + 1);

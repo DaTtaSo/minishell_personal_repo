@@ -31,6 +31,8 @@ char	*extract_word(char *str, int *i, t_quote_type *q_type,
 		(*i)++;
 	}
 	res = ft_substr(str, start, *i - start);
+	if (!res)
+		return (NULL);
 	if (quotes)
 		*in_quote = UNCLOSED;
 	return (res);
@@ -109,6 +111,8 @@ t_token	*tokenize_bis(int *i, char *str)
 	{
 		type = WORD;
 		word = extract_word(str, i, &q_type, &in_quote);
+		if (!word)
+			return (NULL);
 		new_token = create_token(word, type, &q_type, &in_quote);
 		free(word);
 		if (!new_token)

@@ -28,6 +28,8 @@ t_list	*create_env_node_from_parts(char *name, char *content)
 {
 	t_list	*node;
 
+	if (!name || !content)
+		return (NULL);
 	node = malloc(sizeof(t_list));
 	if (!node)
 		return (NULL);

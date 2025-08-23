@@ -29,6 +29,8 @@ static char	*extract_word_retokenize(char *str, int *i, t_quote_type *q_type)
 		(*i)++;
 	}
 	res = ft_substr(str, start, *i - start);
+	if (!res)
+		return (NULL);
 	return (res);
 }
 
@@ -45,6 +47,8 @@ static t_token	*retokenize_bis(int *i, char *str, t_quote_type *q_type,
 		return (NULL);
 	type = WORD;
 	word = extract_word_retokenize(str, i, q_type);
+	if (!word)
+		return (NULL);
 	new_token = create_token(word, type, q_type, &in_quote);
 	free(word);
 	if (!new_token)
@@ -91,13 +95,15 @@ void	handle_retoken(t_data *data, char *value, t_token **current, char **res)
 	char	*tmp;
 
 	if (*res && **res)
-	{
 		combined_value = ft_strjoin(*res, value);
-		if (!combined_value)
-			return ;
-	}
 	else
 		combined_value = ft_strdup(value);
+	if (!combined_value)
+	{
+		free(*res);
+		*res = NULL;
+		return ;
+	}
 	new_tokens = retokenize(data, combined_value, (*current)->q_type);
 	if (new_tokens)
 	{
