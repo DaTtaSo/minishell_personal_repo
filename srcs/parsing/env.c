@@ -110,7 +110,7 @@ static char	*extract_word_retokenize(char *str, int *i, t_quote_type *q_type)
 	return (res);
 }
 
-static t_token	*retokenize_bis(int *i, char *str, t_quote_type *q_type)
+static t_token	*retokenize_bis(int *i, char *str, t_quote_type *q_type, t_quote_type	in_quote)
 {
 	t_token_type	type;
 	t_token			*new_token;
@@ -122,7 +122,7 @@ static t_token	*retokenize_bis(int *i, char *str, t_quote_type *q_type)
 		return (NULL);
 	type = WORD;
 	word = extract_word_retokenize(str, i, q_type);
-	new_token = create_token(word, type, q_type);
+	new_token = create_token(word, type, q_type, &in_quote);
 	free(word);
 	if (!new_token)
 		return (NULL);
@@ -136,15 +136,17 @@ static t_token	*retokenize(t_data *data, char *str, t_quote_type o_q_type)
 	t_token			*new_token;
 	t_token			**current;
 	t_quote_type	q_type;
+	t_quote_type	in_quote;
 	int				i;
 
 	i = 0;
 	new_token = NULL;
+	in_quote = NO_QUOTES;
 	current = &new_token;
 	while (str[i])
 	{
 		q_type = o_q_type;
-		*current = retokenize_bis(&i, str, &q_type);
+		*current = retokenize_bis(&i, str, &q_type, in_quote);
 		if (!*current)
 		{
 			if (str[i])
@@ -165,7 +167,6 @@ void	handle_retoken(t_data *data, char *value, t_token **current, char **res)
 	char	*combined_value;
 	char	*tmp;
 
-	(*current)->retokenized = 1;
 	if (*res && **res)
 	{
 		combined_value = ft_strjoin(*res, value);
@@ -216,3 +217,53 @@ t_list	*cpy_env(char **env, t_data *data)
 	}
 	return (env_cpy);
 }
+
+//static char *get_remaining_str(char *str)
+//{
+//	int i = 0;
+//
+//	while (str[i] && str[i] != '$')
+//		i++;
+//	if (!str[i])
+//		return (ft_strdup(""));
+//	i++;
+//	while (str[i] && (ft_isalnum(str[i]) || str[i] == '_'))
+//		i++;
+//	return (ft_substr(str, i, ft_strlen(str) - i));
+//}
+//
+//void	handle_retoken(t_data *data, char *value, t_token **current, char **res)
+//{
+//	t_token	*new_tokens;
+//	char	*combined_value;
+//	char	*remaining_str;
+//	char	*tmp;
+//
+//	remaining_str = get_remaining_str((*current)->str);
+//	if (*res && **res)
+//	{
+//		tmp = ft_strjoin(*res, value);
+//		if (!tmp)
+//			return ;
+//		if (remaining_str)
+//			combined_value = ft_strjoin(tmp, remaining_str);
+//		else
+//			combined_value = tmp;
+//	}
+//	else
+//		combined_value = ft_strdup(value);
+//	new_tokens = retokenize(data, combined_value, (*current)->q_type);
+//	if (new_tokens)
+//	{
+//		replace_current_token_with_list(data, current, new_tokens);
+//		(*current)->retokenized = 1;
+//	}
+//	else
+//	{
+//		tmp = ft_strdup(combined_value);
+//		if (tmp)
+//			*res = join_and_free(*res, tmp);
+//		(*current)->retokenized = 0;
+//	}
+//	free(combined_value);
+//}

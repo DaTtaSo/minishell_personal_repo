@@ -84,17 +84,9 @@ void	is_cmd_null(t_cmd *cmd, t_data *data)
 	while (!t->file && t->cmd_param && t->cmd_param[i] && !(t->cmd_param[i][0]))
 		i++;
 	if (!t->file && t->cmd_param && !t->cmd_param[i] && cmd->expanded)
-	{
-//		dprintf(2,"pasdfdzsfdafgdrdfdddddf\n");
 		close_and_free_all(data);
-	}
 	if (!i || (t->cmd_param || t->cmd_param[i]))
-	{
-//		dprintf(2,"asdfsdfsdgf\n");
 		return ;
-	}
-//	dprintf(2,"pipi\n");
-
 	if (data->prev_fd != -1)
 	{
 		dup2(data->prev_fd, STDIN_FILENO);

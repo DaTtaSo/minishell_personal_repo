@@ -48,7 +48,7 @@ static int	check_only_q(t_token **current)
 	int	i;
 
 	i = 0;
-	if (!current || !(*current) || !(*current)->str)
+	if (!(*current) || !(*current)->str)
 		return (0);
 	while ((*current)->str[i])
 	{
@@ -78,9 +78,9 @@ void	expand_tokens(t_data *data)
 	while (current)
 	{
 		next = current->next;
-		if (current->q_type != NO_QUOTES && current->str && !check_only_q(&current) && !current->retokenized)
+		if ((current->q_type != NO_QUOTES || current->in_quote == 3) && current->str && !check_only_q(&current) && !current->retokenized)
 		{
-			clean = remove_outer_quotes_cmd(current->str, current->q_type);
+			clean = remove_outer_quotes(current->str, current->q_type, current->in_quote);
 			free(current->str);
 			current->str = clean;
 			current->q_type = NO_QUOTES;

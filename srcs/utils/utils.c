@@ -96,6 +96,8 @@ int	check_synthax(t_data *data)
 				"syntax error near unexpected token", &data->token));
 	while (token)
 	{
+		if (token->in_quote == UNCLOSED)
+			return (er_msg_free_tok(token->str, "unclosed quote", &data->token));
 		if ((!token->str || token->str[0] == '\0'))
 			return (er_msg_free_tok(token->str, "command not found",
 					&data->token));

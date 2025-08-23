@@ -79,7 +79,9 @@ typedef enum e_quotes_type
 {
 	NO_QUOTES,
 	SINGLE_QUOTES,
-	DOUBLE_QUOTES
+	DOUBLE_QUOTES,
+	MIXED_QUOTES,
+	UNCLOSED
 }					t_quote_type;
 
 typedef struct s_token
@@ -89,6 +91,7 @@ typedef struct s_token
 	int				expanded;
 	t_token_type	type;
 	t_quote_type	q_type;
+	t_quote_type	in_quote;
 	struct s_token	*next;
 }					t_token;
 
@@ -114,9 +117,9 @@ extern int			g_exit_status;
 t_token_type		get_operator_type(char *str, int *i);
 t_token				*tokenize(t_data *data, char *str);
 t_token				*create_token(char *str, t_token_type type,
-						t_quote_type *q_type);
-char				*extract_word(char *str, int *i, t_quote_type *q_type);
-t_token				*tokenize_bis(int *i, char *str, t_quote_type *q_type);
+						t_quote_type *q_type, t_quote_type *in_quote);
+char				*extract_word(char *str, int *i, t_quote_type *q_type, t_quote_type *in_quote);
+t_token				*tokenize_bis(int *i, char *str);
 // token_utils
 char				*get_operator_str(t_token_type type);
 int					ft_isspace(char c);
@@ -156,8 +159,8 @@ void				replace_current_token_with_list(t_data *data,
 						t_token **current, t_token *new_tokens);
 int					token_contains_quotes(char *str);
 char				*remove_quotes(char *str);
-char				*remove_outer_quotes(char *str, t_quote_type q_type);
-char				*remove_outer_quotes_cmd(char *str, t_quote_type q_type);
+char				*remove_outer_quotes(char *str, t_quote_type q_type, t_quote_type in_quote);
+char				*remove_outer_quotes_cmd(char *str, t_quote_type q_type, t_quote_type in_quote);
 t_token				*find_prev_token(t_token *head, t_token *token);
 // env_utils_4
 int					handle_quote(int *i, int *quotes, char *str, t_quote_type q_type);

@@ -119,149 +119,46 @@ char	*remove_quotes(char *str)
 	return (result);
 }
 
-// char	*remove_quotes(char *str)
-// {
-// 	char	*result;
-// 	int		i;
-// 	int		j;
-// 	int		in_single;
-// 	int		in_double;
-// 	int		quote_count;
+char	*remove_outer_quotes_cmd(char *str, t_quote_type q_type, t_quote_type in_quote)
+{
+	char *result;
+	int i;
+	int j;
+	int current_quote_state;
 
-// 	if (!str)
-// 		return (NULL);
-// 	result = malloc(ft_strlen(str) + 1);
-// 	if (!result)
-// 		return (NULL);
-// 	i = 0;
-// 	j = 0;
-// 	in_single = 0;
-// 	in_double = 0;
-// 	quote_count = 0;
-	
-// 	// Compter les guillemets pour détecter les cas complexes
-// 	for (int k = 0; str[k]; k++)
-// 		if (str[k] == '"' || str[k] == '\'')
-// 			quote_count++;
-	
-// 	// Si nous avons beaucoup de guillemets, c'est probablement un cas complexe
-// 	if (quote_count > 6 && ft_strchr(str, '$'))
-// 	{
-// 		// Pour les cas complexes, préserver plus de guillemets
-// 		while (str[i])
-// 		{
-// 			// Préserver certains guillemets dans les cas complexes
-// 			if ((str[i] == '\'' && in_double) || (str[i] == '"' && in_single))
-// 				result[j++] = str[i];
-// 			else if (str[i] == '\'' && !in_double)
-// 			{
-// 				in_single = !in_single;
-// 				result[j++] = str[i];
-// 			}
-// 			else if (str[i] == '"' && !in_single)
-// 			{
-// 				in_double = !in_double;
-// 				result[j++] = str[i];
-// 			}
-// 			else
-// 				result[j++] = str[i];
-// 			i++;
-// 		}
-// 	}
-// 	else
-// 	{
-// 		// Comportement normal pour les cas simples
-// 		while (str[i])
-// 		{
-// 			if (str[i] == '\'' && !in_double)
-// 				in_single = !in_single;
-// 			else if (str[i] == '"' && !in_single)
-// 				in_double = !in_double;
-// 			else
-// 				result[j++] = str[i];
-// 			i++;
-// 		}
-// 	}
-// 	result[j] = '\0';
-// 	return (result);
-// }
+	i = 0;
+	j = 0;
+	current_quote_state = 0;
+	if (!str)
+		return (NULL);
+	result = malloc(ft_strlen(str) + 1);
+	if (!result)
+		return (NULL);
+	while (str[i])
+	{
+		if (str[i] == '\'' && current_quote_state != 2)
+		{
+			if (current_quote_state == 1)
+				current_quote_state = 0;
+			else
+				current_quote_state = 1;
+		}
+		else if (str[i] == '"' && current_quote_state != 1)
+		{
+			if (current_quote_state == 2)
+				current_quote_state = 0;
+			else
+				current_quote_state = 2;
+		}
+		else
+			result[j++] = str[i];
+		i++;
+	}
+	result[j] = '\0';
+	return (result);
+}
 
-// char	*remove_outer_quotes_cmd(char *str, t_quote_type q_type)
-// {
-// 	int	len;
-// 	char *result;
-// 	if (!str)
-// 		return (NULL);
-// 	len = ft_strlen(str);
-// 	if (len < 2)
-// 		return (ft_strdup(str));
-// 	if (q_type == SINGLE_QUOTES && str[0] == '\'' && str[len - 1] == '\'')
-// 	{
-// 		if (len == 2)
-// 			return (ft_strdup(""));
-// 		return (ft_substr(str, 1, len - 2));
-// 	}
-// 	else if (q_type == DOUBLE_QUOTES && str[0] == '"' && str[len - 1] == '"')
-// 	{
-// 		if (len == 2)
-// 			return (ft_strdup(""));
-// 		result = ft_substr(str, 1, len - 2);
-// 		// Préserver les variables dans les guillemets doubles
-// 		return (result);
-// 	}
-// 	return (ft_strdup(str));
-// }
-
-// char *remove_outer_quotes_cmd(char *str, t_quote_type q_type)
-// {
-//     int len;
-//     char *result;
-//     int has_inner_quotes = 0;
-//     int i;
-
-//     if (!str)
-//         return (NULL);
-        
-//     len = ft_strlen(str);
-//     if (len < 2)
-//         return (ft_strdup(str));
-
-//     /* Check if there are quotes inside the string */
-//     for (i = 1; i < len - 1; i++)
-//     {
-//         if (str[i] == '"' || str[i] == '\'')
-//         {
-//             has_inner_quotes = 1;
-//             break;
-//         }
-//     }
-
-//     /* Only remove outer quotes if they match the quote type and don't interfere with inner structure */
-//     if (q_type == SINGLE_QUOTES && str[0] == '\'' && str[len - 1] == '\'')
-//     {
-//         if (len == 2)
-//             return (ft_strdup(""));
-//         return (ft_substr(str, 1, len - 2));
-//     }
-//     else if (q_type == DOUBLE_QUOTES && str[0] == '"' && str[len - 1] == '"')
-//     {
-//         /* Be more careful with double quotes containing complex nested structures */
-//         if (has_inner_quotes && len > 10) /* Heuristic for complex cases */
-//         {
-//             /* For complex nested quotes, be more conservative */
-//             return (ft_strdup(str));
-//         }
-        
-//         if (len == 2)
-//             return (ft_strdup(""));
-//         result = ft_substr(str, 1, len - 2);
-//         return (result);
-//     }
-    
-//     return (ft_strdup(str));
-// }
-
-char *remove_outer_quotes_cmd(char *str, t_quote_type q_type)
+char *remove_outer_quotes(char *str, t_quote_type q_type, t_quote_type in_quote)
 {
 	int		len;
 	char	*result;
@@ -281,19 +178,17 @@ char *remove_outer_quotes_cmd(char *str, t_quote_type q_type)
 	}
 	else if (q_type == DOUBLE_QUOTES && str[0] == '"' && str[len - 1] == '"')
 	{
-		for (i = 1; i < len - 1; i++)
+		i = 1;
+		while (i < len - 1)
 		{
-			if (str[i] == '"' && (i == 1 || str[i-1] != '\\'))
-			{
+			if (str[i] == '"' && (i == 1 || str[i - 1] != '\\'))
 				return (ft_strdup(str));
-			}
+			i++;
 		}
-
 		if (len == 2)
 			return (ft_strdup(""));
 		result = ft_substr(str, 1, len - 2);
 		return (result);
 	}
-
 	return (ft_strdup(str));
 }
