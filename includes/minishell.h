@@ -256,7 +256,7 @@ int					ft_change_var(t_list **env, char *a, t_data *data);
 int					export_not_args(t_list **env);
 // export_utils
 int					exist(t_list **env, char *a);
-char				*expand_value(t_data *data, char *str);
+int					ft_not_env(t_list **env, char **a, t_data *data);
 t_list				*create_env_node_from_parts(char *name, char *content);
 
 // ft_pwd

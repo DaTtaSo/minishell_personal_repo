@@ -19,8 +19,11 @@ int	ft_export(t_list **env, char **a, t_data *data)
 
 	tmp = *env;
 	i = 0;
-	if (!a || !a[1])
+	if (!a || !a[1] || !a[0])
 		return (export_not_args(env));
+	if (!*env && ft_not_env(env, a, data))
+		return (data->exit_status);
+	tmp = *env;
 	while (a && a[++i])
 	{
 		if (check_params_env(a[i]))
@@ -29,9 +32,7 @@ int	ft_export(t_list **env, char **a, t_data *data)
 		else if (exist(env, a[i]) != -1 && ft_change_var(env, a[i], data))
 			return (ft_error_msg(NULL, "malloc failed"));
 		else if (exist(env, a[i]) == -1)
-		{
 			ft_export_bis(tmp, data, a, &i);
-		}
 		tmp = *env;
 	}
 	return (data->exit_status);
@@ -99,6 +100,8 @@ int	export_not_args(t_list **env)
 {
 	t_list	*sorted;
 
+	if (!*env)
+		return (0);
 	sorted = sort_list(*env);
 	while (sorted)
 	{
@@ -124,8 +127,8 @@ int	ft_change_var(t_list **env, char *a, t_data *data)
 	if (!ft_strchr(a, '='))
 		return (0);
 	pos = exist(env, a);
-	if (pos == -1)
-		return (ft_error_msg("", "malloc failed"));
+	if (pos == -2)
+		return (ft_error_msg("ft_strndup in exist", "malloc failed"));
 	while (pos--)
 		tmp = tmp->next;
 	value = ft_strdup(equal_pos + 1);
