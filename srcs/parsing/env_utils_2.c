@@ -12,6 +12,41 @@
 
 #include "minishell.h"
 
+char	*remove_outer_quotes(char *str, t_quote_type q_type,
+							t_quote_type in_quote)
+{
+	int		len;
+	char	*result;
+	int		i;
+
+	if (!str)
+		return (NULL);
+	len = ft_strlen(str);
+	if (len < 2)
+		return (ft_strdup(str));
+	if (q_type == SINGLE_QUOTES && str[0] == '\'' && str[len - 1] == '\'')
+	{
+		if (len == 2)
+			return (ft_strdup(""));
+		return (ft_substr(str, 1, len - 2));
+	}
+	else if (q_type == DOUBLE_QUOTES && str[0] == '"' && str[len - 1] == '"')
+	{
+		i = 1;
+		while (i < len - 1)
+		{
+			if (str[i] == '"' && (i == 1 || str[i - 1] != '\\'))
+				return (ft_strdup(str));
+			i++;
+		}
+		if (len == 2)
+			return (ft_strdup(""));
+		result = ft_substr(str, 1, len - 2);
+		return (result);
+	}
+	return (ft_strdup(str));
+}
+
 t_token	*process_word_token(t_data *data, t_token *current, t_token *next)
 {
 	char	*expanded;
@@ -43,7 +78,7 @@ int	check_token(t_token **current)
 	return (0);
 }
 
-static int	check_only_q(t_token **current)
+static int	check_q(t_token **current)
 {
 	int	i;
 
@@ -78,9 +113,11 @@ void	expand_tokens(t_data *data)
 	while (current)
 	{
 		next = current->next;
-		if ((current->q_type != NO_QUOTES || current->in_quote == 3) && current->str && !check_only_q(&current) && !current->retokenized)
+		if ((current->q_type != NO_QUOTES || current->in_quote == 3)
+			&& current->str && !check_q(&current) && !current->retokenized)
 		{
-			clean = remove_outer_quotes(current->str, current->q_type, current->in_quote);
+			clean = remove_outer_quotes(current->str, current->q_type,
+					current->in_quote);
 			free(current->str);
 			current->str = clean;
 			current->q_type = NO_QUOTES;

@@ -118,10 +118,11 @@ t_token_type		get_operator_type(char *str, int *i);
 t_token				*tokenize(t_data *data, char *str);
 t_token				*create_token(char *str, t_token_type type,
 						t_quote_type *q_type, t_quote_type *in_quote);
-char				*extract_word(char *str, int *i, t_quote_type *q_type, t_quote_type *in_quote);
+char				*extract_word(char *str, int *i, t_quote_type *q_type,
+						t_quote_type *in_quote);
 t_token				*tokenize_bis(int *i, char *str);
 // token_utils
-char				*get_operator_str(t_token_type type);
+char				*get_op_str(t_token_type type);
 int					ft_isspace(char c);
 int					is_operator(char c);
 int					trickster(int *i);
@@ -131,6 +132,11 @@ void				handle_double_quote(int *quotes, t_quote_type *q_type);
 void				handle_single_quote(int *quotes, t_quote_type *q_type);
 void				handle_simple_expansion(char *value, char **res);
 void				handle_empty_var(char **res);
+// token_utils_3
+void				handle_double_quote_tok(int *quotes, t_quote_type *q_type,
+						t_quote_type *in_quote, char *str);
+void				handle_single_quote_tok(int *quotes, t_quote_type *q_type,
+						t_quote_type *in_quote, char *str);
 
 // env
 char				*expand_env_var(t_data *data, char *str, t_token **current);
@@ -159,11 +165,13 @@ void				replace_current_token_with_list(t_data *data,
 						t_token **current, t_token *new_tokens);
 int					token_contains_quotes(char *str);
 char				*remove_quotes(char *str);
-char				*remove_outer_quotes(char *str, t_quote_type q_type, t_quote_type in_quote);
-char				*remove_outer_quotes_cmd(char *str, t_quote_type q_type, t_quote_type in_quote);
+char				*remove_outer_quotes(char *str, t_quote_type q_type,
+						t_quote_type in_quote);
+char				*remove_outer_quotes_cmd(char *str);
 t_token				*find_prev_token(t_token *head, t_token *token);
 // env_utils_4
-int					handle_quote(int *i, int *quotes, char *str, t_quote_type q_type);
+int					handle_quote(int *i, int *quotes, char *str,
+						t_quote_type q_type);
 int					exported(t_list **env_cpy, char *arg, t_data *data);
 int					ft_make_env(t_list **env_cpy, t_data *data);
 int					update_shlvl(t_list **env_cpy, t_list *tmp_env,
@@ -307,12 +315,5 @@ void				ft_print_tab(char **tab);
 void				sigint_handler(int sig);
 void				set_signals_prompt(void);
 int					do_nothing(void);
-
-// void				expand_env_var_bis(t_data *data, int *quotes, char *str,
-//						char **res, t_token **current, int *retokenized);
-// extern void			expend_env_var_third(int *i, char *str, t_list *env_cpy,
-//						t_data *data, char **res, t_token **current,
-//						int *quotes, int *retokenized);
-// char				*expand_env_var(t_data *data, char *str, t_token **current);
 
 #endif
