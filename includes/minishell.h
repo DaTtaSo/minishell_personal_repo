@@ -178,7 +178,7 @@ int		check_q(t_token **current);
 
 // command_builder
 t_data				cmd_builder(t_data *data);
-void				cmd_builder_bis(t_token **token, t_cmd **current_cmd,
+int				cmd_builder_bis(t_token **token, t_cmd **current_cmd,
 						int *param_index);
 t_cmd				*cmd_list(t_token *token);
 int					cmd_list_bis(t_token **current_token, t_cmd **head,
@@ -189,10 +189,10 @@ void				cmd_count(t_token *token, int *nb_pipe);
 int					get_cmd_size(t_token *token);
 int					is_redirection(int type);
 t_file				*file_add_back(t_file **lst);
-void				copy_filename(t_file *current, t_token **token);
+int				copy_filename(t_file *current, t_token **token);
 // builder_utils_2
-void				handle_redirection(t_file **files, t_token **token);
-void				copy_eof(t_file *current, t_token **token);
+int				handle_redirection(t_file **files, t_token **token);
+int				copy_eof(t_file *current, t_token **token);
 
 /////////////*exec*/////////////
 
