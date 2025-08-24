@@ -30,18 +30,15 @@ char	*expand_env_var(t_data *data, char *str, t_token **current)
 void	expand_env_var_bis(t_data *data, char *str, char **res,
 						t_token **current)
 {
-	int		i;
-	int		quotes;
+	int	i;
+	int	quotes;
 
 	quotes = 0;
 	i = 0;
 	while (str[i])
 	{
-		if (handle_quote(&i, &quotes, str, (*current)->q_type))
-		{
-			i++;
+		if (handle_quote(&i, &quotes, str))
 			continue ;
-		}
 		if (!str[i])
 			break ;
 		if (str[i] == '$' && str[i + 1] == '?' && quotes != 1)
@@ -54,25 +51,18 @@ void	expand_env_var_bis(t_data *data, char *str, char **res,
 				return ;
 		}
 		else
-		{
 			*res = join_and_free(*res, char_to_str(str[i++]));
-		}
 	}
 }
 
 void	expend_env_var_third(int *i, char *str, t_data *data, char **res)
 {
-	char	*name;
-	char	*value;
-	int		start;
-	t_token	**current;
+	char		*name;
+	char		*value;
+	t_token		**current;
 
 	current = (data->current_token);
-	(*i)++;
-	start = (*i);
-	while (str[(*i)] && (ft_isalnum(str[(*i)]) || str[(*i)] == '_'))
-		(*i)++;
-	name = ft_substr(str, start, (*i) - start);
+	name = extract_var_name(str, i);
 	if (!name || name[0] == '\0')
 	{
 		handle_empty_var(res);

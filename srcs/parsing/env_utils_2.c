@@ -12,39 +12,6 @@
 
 #include "minishell.h"
 
-char	*remove_outer_quotes(char *str, t_quote_type q_type)
-{
-	int		len;
-	char	*result;
-	int		i;
-
-	if (!str)
-		return (NULL);
-	len = ft_strlen(str);
-	if (len < 2)
-		return (ft_strdup(str));
-	if ((q_type == SINGLE_QUOTES && str[0] == '\'' && str[len - 1] == '\'')
-		|| (q_type == DOUBLE_QUOTES && str[0] == '"' && str[len - 1] == '"'))
-	{
-		i = 1;
-		while (i < len - 1)
-		{
-			if ((str[i] == '"' || str[i] == '\'') && i == 1)
-				return (ft_strdup(str));
-			i++;
-		}
-		if (len == 2)
-			result = ft_strdup("");
-		else
-			result = ft_substr(str, 1, len - 2);
-	}
-	else
-		result = ft_strdup(str);
-	if (!result)
-		return (NULL);
-	return (result);
-}
-
 t_token	*process_word_token_bis(t_data *data, t_token *current, t_token *next)
 {
 	char	*expanded;

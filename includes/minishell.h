@@ -167,14 +167,14 @@ char				*remove_outer_quotes(char *str, t_quote_type q_type);
 char				*remove_outer_quotes_cmd(char *str);
 t_token				*find_prev_token(t_token *head, t_token *token);
 // env_utils_4
-int					handle_quote(int *i, int *quotes, char *str,
-						t_quote_type q_type);
+int					handle_quote(int *i, int *quotes, char *str);
 int					exported(t_list **env_cpy, char *arg, t_data *data);
 int					ft_make_env(t_list **env_cpy, t_data *data);
 int					update_shlvl(t_list **env_cpy, t_list *tmp_env,
 						t_data *data);
-
-int	check_q(t_token **current);
+// env_utils_5
+char	*extract_var_name(char *str, int *i);
+int		check_q(t_token **current);
 
 // command_builder
 t_data				cmd_builder(t_data *data);
