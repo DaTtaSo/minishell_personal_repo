@@ -6,15 +6,17 @@
 /*   By: alarroye <alarroye@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/27 21:09:11 by alarroye          #+#    #+#             */
-/*   Updated: 2025/08/04 00:30:12 by alarroye         ###   ########lyon.fr   */
+/*   Updated: 2025/08/24 02:11:00 by alarroye         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-char	**ft_free_and_null(char **tab)
+char	**ft_free_and_null(char **tab, char *t)
 {
 	ft_free_dtab(tab);
+	if (t && *t)
+		free(t);
 	return (NULL);
 }
 
@@ -34,11 +36,11 @@ char	**lst_in_tab(t_list *env)
 		{
 			tmp = ft_strjoin(env->name, "=");
 			if (!tmp)
-				return (ft_free_and_null(tab_env));
+				return (ft_free_and_null(tab_env, NULL));
 			tab_env[++i] = ft_strjoin(tmp, env->content);
 			free(tmp);
 			if (!tab_env[i])
-				return (ft_free_and_null(tab_env));
+				return (ft_free_and_null(tab_env, NULL));
 		}
 		env = env->next;
 	}

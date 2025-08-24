@@ -77,15 +77,24 @@ static t_token	*retokenize(t_data *data, char *str, t_quote_type o_q_type)
 		if (!*current)
 		{
 			if (str[i])
-			{
 				free_tokens(&new_token);
-				break ;
-			}
 			break ;
 		}
 		current = &(*current)->next;
 	}
 	return (new_token);
+}
+
+static char	*handle_retoken_bis(char **res, char *value)
+{
+	char	*combined_value;
+
+	combined_value = NULL;
+	if (*res && **res)
+		combined_value = ft_strjoin(*res, value);
+	else
+		combined_value = ft_strdup(value);
+	return (combined_value);
 }
 
 void	handle_retoken(t_data *data, char *value, t_token **current, char **res)
@@ -94,10 +103,7 @@ void	handle_retoken(t_data *data, char *value, t_token **current, char **res)
 	char	*combined_value;
 	char	*tmp;
 
-	if (*res && **res)
-		combined_value = ft_strjoin(*res, value);
-	else
-		combined_value = ft_strdup(value);
+	combined_value = handle_retoken_bis(res, value);
 	if (!combined_value)
 	{
 		free(*res);

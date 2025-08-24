@@ -6,7 +6,7 @@
 /*   By: alarroye <alarroye@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 21:39:06 by alarroye          #+#    #+#             */
-/*   Updated: 2025/08/06 19:08:56 by alarroye         ###   ########lyon.fr   */
+/*   Updated: 2025/08/24 02:10:59 by alarroye         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,11 +86,7 @@ char	*ft_path(t_cmd *cmd, t_list *env, int *error)
 			path = search_path(cmd_tab, lst_path, error);
 			ft_free_dtab(lst_path);
 			if (ft_status_path(cmd_tab, error, path))
-			{
-				if (path && *path)
-					free(path);
-				return (NULL);
-			}
+				ft_free_and_null(NULL, path);
 		}
 	}
 	return (path);
@@ -111,9 +107,7 @@ int	ft_status_path(char *cmd, int *error, char *path)
 		}
 	}
 	if (*error == 126)
-	{
 		return (1);
-	}
 	else if (*error == 127 || !path)
 	{
 		*error = 127;

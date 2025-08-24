@@ -22,6 +22,17 @@ void	manage_exit_status(t_data **data, int *i, char *str, char **res)
 	(*i) += 2;
 }
 
+static void	loop_replace_cur_tok_list(t_token **last_new)
+{
+	while ((*last_new) && (*last_new)->next)
+	{
+		(*last_new)->retokenized = 1;
+		(*last_new) = (*last_new)->next;
+	}
+	if (*last_new)
+		(*last_new)->retokenized = 1;
+}
+
 void	replace_current_token_with_list(t_data *data, t_token **current,
 										t_token *new_tokens)
 {
@@ -38,13 +49,7 @@ void	replace_current_token_with_list(t_data *data, t_token **current,
 	free((*current)->str);
 	free(*current);
 	last_new = new_tokens;
-	while (last_new && last_new->next)
-	{
-		last_new->retokenized = 1;
-		last_new = last_new->next;
-	}
-	if (last_new)
-		last_new->retokenized = 1;
+	loop_replace_cur_tok_list(&last_new);
 	if (prev)
 		prev->next = new_tokens;
 	else
