@@ -28,13 +28,30 @@ void	free_env(t_list *env)
 			free(tmp);
 	}
 }
+//
+//void	free_tokens(t_token **token)
+//{
+//	t_token	*tmp;
+//
+//	if (!token || !*token)
+//		return ;
+//	while (*token)
+//	{
+//		tmp = (*token)->next;
+//		if ((*token)->str)
+//			free((*token)->str);
+//		free(*token);
+//		*token = tmp;
+//	}
+//	(*token) = NULL;
+//}
 
-void	free_tokens(t_token **token)
+int	free_tokens(t_token **token)
 {
 	t_token	*tmp;
 
 	if (!token || !*token)
-		return ;
+		return (1);
 	while (*token)
 	{
 		tmp = (*token)->next;
@@ -44,6 +61,7 @@ void	free_tokens(t_token **token)
 		*token = tmp;
 	}
 	(*token) = NULL;
+	return (1);
 }
 
 void	free_file_list(t_file **file)

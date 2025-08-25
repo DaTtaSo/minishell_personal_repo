@@ -173,12 +173,12 @@ int					ft_make_env(t_list **env_cpy, t_data *data);
 int					update_shlvl(t_list **env_cpy, t_list *tmp_env,
 						t_data *data);
 // env_utils_5
-char	*extract_var_name(char *str, int *i);
-int		check_q(t_token **current);
+char				*extract_var_name(char *str, int *i);
+int					check_q(t_token **current);
 
 // command_builder
 t_data				cmd_builder(t_data *data);
-int				cmd_builder_bis(t_token **token, t_cmd **current_cmd,
+int					cmd_builder_bis(t_token **token, t_cmd **current_cmd,
 						int *param_index);
 t_cmd				*cmd_list(t_token *token);
 int					cmd_list_bis(t_token **current_token, t_cmd **head,
@@ -189,10 +189,10 @@ void				cmd_count(t_token *token, int *nb_pipe);
 int					get_cmd_size(t_token *token);
 int					is_redirection(int type);
 t_file				*file_add_back(t_file **lst);
-int				copy_filename(t_file *current, t_token **token);
+int					copy_filename(t_file *current, t_token **token);
 // builder_utils_2
-int				handle_redirection(t_file **files, t_token **token);
-int				copy_eof(t_file *current, t_token **token);
+int					handle_redirection(t_file **files, t_token **token);
+int					copy_eof(t_file *current, t_token **token);
 
 /////////////*exec*/////////////
 
@@ -294,7 +294,7 @@ void				close_and_free_all(t_data *data);
 // ft_free
 void				ft_free_all_lst(t_list *lst);
 void				free_file_list(t_file **file);
-void				free_tokens(t_token **token);
+int					free_tokens(t_token **token);
 void				free_env(t_list *env);
 int					ft_free_dtab(char **tab);
 void				free_all(t_data *data, char *read);

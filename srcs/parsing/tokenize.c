@@ -107,21 +107,26 @@ t_token	*tokenize_bis(int *i, char *str)
 
 t_token	*tokenize(t_data *data, char *str)
 {
-	t_token			**current;
-	t_token			*new_token;
-	int				i;
+	t_token	**current;
+	t_token	*new_token;
+	int		i;
+	int		is_eof;
 
 	i = 0;
+	is_eof = 0;
 	new_token = NULL;
 	current = &new_token;
 	while (str[i])
 	{
 		*current = tokenize_bis(&i, str);
-		if (!*current)
-		{
-			free_tokens(&new_token);
+		if (!*current && free_tokens(&new_token))
 			break ;
-		}
+		if (is_eof == 1)
+			(*current)->expanded = 2;
+		if ((*current)->type == HEREDOC)
+			is_eof = 1;
+		else
+			is_eof = 0;
 		current = &(*current)->next;
 	}
 	return (new_token);
